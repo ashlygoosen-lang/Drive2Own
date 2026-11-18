@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
@@ -52,7 +53,7 @@ export function VehicleDetail() {
       <Header />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <VehicleImage src={v.imageUrl} className="w-full h-72 md:h-96 rounded-xl" />
+          <VehicleImage src={v.imageUrl} color={v.color} className="w-full h-72 md:h-96 rounded-xl" />
           <div>
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-3xl font-bold">{v.year} {v.make} {v.model}</h1>
@@ -91,7 +92,7 @@ export function VehicleDetail() {
               ) : !user ? (
                 <div className="space-y-3">
                   <p className="text-sm text-gray-600">Sign in as a driver to request this vehicle.</p>
-                  <Link to="/join?role=driver"><Button className="w-full bg-[#00C853] hover:bg-[#00b84a]">Sign up</Button></Link>
+                  <Link to="/join?role=driver"><Button className="w-full bg-[#00873a] hover:bg-[#006f2f]">Sign up</Button></Link>
                   <Link to="/login"><Button variant="outline" className="w-full">Login</Button></Link>
                 </div>
               ) : user.role === "owner" ? (
@@ -119,7 +120,7 @@ export function VehicleDetail() {
                     <div className="flex justify-between"><span>Deposit</span><span>{money(v.deposit)}</span></div>
                     <div className="flex justify-between font-semibold"><span>Total due over the rental</span><span>{money(total + v.deposit)}</span></div>
                   </div>
-                  <Button type="submit" disabled={busy} className="w-full bg-[#00C853] hover:bg-[#00b84a]">
+                  <Button type="submit" disabled={busy} className="w-full bg-[#00873a] hover:bg-[#006f2f]">
                     {busy ? "Sending…" : "Request this vehicle"}
                   </Button>
                   <p className="text-xs text-gray-500">You pay the owner directly. The owner confirms each payment in Drive2Own.</p>
@@ -129,6 +130,7 @@ export function VehicleDetail() {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

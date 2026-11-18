@@ -47,7 +47,7 @@ function Payments({ rental, isOwner }: { rental: Rental; isOwner: boolean }) {
                   <Button size="sm" variant="outline" onClick={() => markPaid(p)}>Mark paid</Button>
                 )}
                 {!isOwner && online && (p.status === "pending" || p.status === "overdue") && (
-                  <Button size="sm" className="bg-[#00C853] hover:bg-[#00b84a]" onClick={() => payOnline(p.id).catch((e) => toast.error(msg(e)))}>Pay online</Button>
+                  <Button size="sm" className="bg-[#00873a] hover:bg-[#006f2f]" onClick={() => payOnline(p.id).catch((e) => toast.error(msg(e)))}>Pay online</Button>
                 )}
                 {p.status === "paid" && p.paidVia === "payfast" && <span className="text-xs text-gray-500">via PayFast</span>}
               </td>
@@ -96,7 +96,7 @@ function AgreementPanel({ r, isOwner, reload }: { r: Rental; isOwner: boolean; r
               I confirm this vehicle is comprehensively insured and the policy covers e-hailing use.
             </label>
           )}
-          <Button size="sm" disabled={busy || (isOwner && !insured)} className="bg-[#00C853] hover:bg-[#00b84a]" onClick={accept}>
+          <Button size="sm" disabled={busy || (isOwner && !insured)} className="bg-[#00873a] hover:bg-[#006f2f]" onClick={accept}>
             Accept agreement
           </Button>
         </div>
@@ -123,7 +123,7 @@ function RentalCard({ r, isOwner, reload }: { r: Rental; isOwner: boolean; reloa
     <Card>
       <CardContent className="p-5 space-y-4">
         <div className="flex gap-4">
-          <VehicleImage src={r.vehicle.imageUrl} className="w-24 h-20 rounded-lg shrink-0" />
+          <VehicleImage src={r.vehicle.imageUrl} color={r.vehicle.color} className="w-24 h-20 rounded-lg shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <Link to={`/vehicles/${r.vehicle.id}`} className="font-semibold hover:underline">{r.vehicle.year} {r.vehicle.make} {r.vehicle.model}</Link>
@@ -141,11 +141,11 @@ function RentalCard({ r, isOwner, reload }: { r: Rental; isOwner: boolean; reloa
 
         <div className="flex flex-wrap gap-2">
           {isOwner && r.status === "pending" && (<>
-            <Button size="sm" className="bg-[#00C853] hover:bg-[#00b84a]" onClick={() => act("approve", "Request approved")}>Approve</Button>
+            <Button size="sm" className="bg-[#00873a] hover:bg-[#006f2f]" onClick={() => act("approve", "Request approved")}>Approve</Button>
             <Button size="sm" variant="outline" onClick={() => act("decline", "Request declined")}>Decline</Button>
           </>)}
           {isOwner && r.status === "approved" && (<>
-            <Button size="sm" disabled={!r.agreement.ownerAccepted || !r.agreement.driverAccepted} title={!r.agreement.ownerAccepted || !r.agreement.driverAccepted ? "Both parties must accept the agreement first" : undefined} className="bg-[#00C853] hover:bg-[#00b84a]" onClick={() => act("activate", "Vehicle handed over — payments scheduled")}>Hand over vehicle</Button>
+            <Button size="sm" disabled={!r.agreement.ownerAccepted || !r.agreement.driverAccepted} title={!r.agreement.ownerAccepted || !r.agreement.driverAccepted ? "Both parties must accept the agreement first" : undefined} className="bg-[#00873a] hover:bg-[#006f2f]" onClick={() => act("activate", "Vehicle handed over — payments scheduled")}>Hand over vehicle</Button>
             <Button size="sm" variant="outline" onClick={() => act("decline", "Request declined")}>Withdraw approval</Button>
           </>)}
           {isOwner && r.status === "active" && (
@@ -224,8 +224,8 @@ export function Dashboard() {
             <p className="text-gray-600">{isOwner ? "Manage your vehicles and rental requests." : "Track your rental requests and weekly payments."}</p>
           </div>
           {isOwner
-            ? <Link to="/vehicles/new"><Button className="bg-[#00C853] hover:bg-[#00b84a]">List a vehicle</Button></Link>
-            : <Link to="/vehicles"><Button className="bg-[#00C853] hover:bg-[#00b84a]">Find a vehicle</Button></Link>}
+            ? <Link to="/vehicles/new"><Button className="bg-[#00873a] hover:bg-[#006f2f]">List a vehicle</Button></Link>
+            : <Link to="/vehicles"><Button className="bg-[#00873a] hover:bg-[#006f2f]">Find a vehicle</Button></Link>}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -246,7 +246,7 @@ export function Dashboard() {
           <Card className="border-amber-300 bg-amber-50">
             <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
               <span className="text-sm">Upload your ID, driver's licence and PrDP to start requesting vehicles.</span>
-              <Link to="/documents"><Button size="sm" className="bg-[#00C853] hover:bg-[#00b84a]">Upload documents</Button></Link>
+              <Link to="/documents"><Button size="sm" className="bg-[#00873a] hover:bg-[#006f2f]">Upload documents</Button></Link>
             </CardContent>
           </Card>
         )}
@@ -255,7 +255,7 @@ export function Dashboard() {
           <div className="flex gap-2 border-b">
             {(["rentals", "vehicles"] as const).map((t) => (
               <button key={t} onClick={() => setTab(t)}
-                className={`px-4 py-2 -mb-px border-b-2 capitalize ${tab === t ? "border-[#00C853] text-[#00873a] font-medium" : "border-transparent text-gray-600"}`}>
+                className={`px-4 py-2 -mb-px border-b-2 capitalize ${tab === t ? "border-[#00873a] text-[#00873a] font-medium" : "border-transparent text-gray-600"}`}>
                 {t === "rentals" ? `Requests & rentals${pending ? ` (${pending})` : ""}` : "My vehicles"}
               </button>
             ))}

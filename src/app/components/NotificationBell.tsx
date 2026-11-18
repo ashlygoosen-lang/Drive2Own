@@ -13,7 +13,7 @@ export function NotificationBell() {
     return () => { alive = false; clearInterval(t); };
   }, []);
   return (
-    <Link to="/notifications" className="relative p-1 text-gray-700 hover:text-[#00C853]" aria-label={`Notifications${unread ? ` (${unread} unread)` : ""}`}>
+    <Link to="/notifications" className="relative p-1 text-gray-700 hover:text-[#00873a]" aria-label={`Notifications${unread ? ` (${unread} unread)` : ""}`}>
       <Bell className="w-5 h-5" />
       {unread > 0 && (
         <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-red-500 text-white text-[10px] leading-4 text-center">{unread > 9 ? "9+" : unread}</span>

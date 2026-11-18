@@ -29,7 +29,7 @@ export function Notifications() {
         {items === null && <p className="text-gray-500">Loading…</p>}
         {items?.length === 0 && <p className="text-gray-500">You're all caught up.</p>}
         {items?.map((n) => (
-          <Card key={n.id} onClick={() => open(n)} className={`p-4 cursor-pointer hover:shadow ${n.read ? "" : "border-[#00C853] bg-green-50/50"}`}>
+          <Card key={n.id} onClick={() => open(n)} className={`p-4 cursor-pointer hover:shadow ${n.read ? "" : "border-[#00873a] bg-green-50/50"}`}>
             <div className="flex justify-between gap-3">
               <div>
                 <div className={n.read ? "" : "font-semibold"}>{n.title}</div>

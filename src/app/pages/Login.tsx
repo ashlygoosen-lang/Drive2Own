@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { toast } from "sonner";
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -34,7 +35,7 @@ export function Login() {
       <Header />
       <div className="max-w-md mx-auto px-4 py-12">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-[#00C853] rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-[#00873a] rounded-lg flex items-center justify-center mx-auto mb-4">
             <Car className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-2xl font-bold mb-2">Welcome back</h1>
@@ -59,7 +60,7 @@ export function Login() {
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 <Link to="/forgot" className="text-sm text-[#00873a] hover:underline">Forgot password?</Link>
               </div>
-              <Button type="submit" disabled={busy} className="w-full bg-[#00C853] hover:bg-[#00b84a]">
+              <Button type="submit" disabled={busy} className="w-full bg-[#00873a] hover:bg-[#006f2f]">
                 {busy ? "Signing in…" : "Sign in"}
               </Button>
               <p className="text-center text-sm text-gray-600">
@@ -69,6 +70,7 @@ export function Login() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -11,7 +11,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   const link = ({ isActive }: { isActive: boolean }) =>
-    `hover:text-[#00C853] ${isActive ? "text-[#00C853] font-medium" : "text-gray-700"}`;
+    `hover:text-[#00873a] ${isActive ? "text-[#00873a] font-medium" : "text-gray-700"}`;
   const close = () => setOpen(false);
   const doLogout = () => { logout(); close(); navigate("/"); };
 
@@ -30,7 +30,7 @@ export function Header() {
         <>
           <NavLink to="/login" className={link} onClick={close}>Login</NavLink>
           <Link to="/join" onClick={close}>
-            <Button className="bg-[#00C853] hover:bg-[#00b84a] w-full">Join Now</Button>
+            <Button className="bg-[#00873a] hover:bg-[#006f2f] w-full">Join Now</Button>
           </Link>
         </>
       )}
@@ -42,10 +42,10 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#00C853] rounded-lg flex items-center justify-center">
-              <Car className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-[#0e3b2e] rounded-lg flex items-center justify-center">
+              <Car className="w-6 h-6 text-[#ffc72c]" />
             </div>
-            <span className="text-xl font-semibold">Drive2Own</span>
+            <span className="font-display text-xl font-bold text-[#0e3b2e]">Drive2Own</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">{items}</nav>
           <button className="md:hidden p-2" onClick={() => setOpen(!open)} aria-label="Menu">

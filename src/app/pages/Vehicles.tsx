@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
+import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { Input } from "../components/ui/input";
 import { VehicleCard } from "../components/Common";
@@ -6,7 +8,8 @@ import { Field, selectClass } from "../components/Fields";
 import { api, PLATFORMS, type Vehicle } from "../../lib/api";
 
 export function Vehicles() {
-  const [filters, setFilters] = useState({ q: "", platform: "", maxRate: "", sort: "newest" });
+  const [params] = useSearchParams();
+  const [filters, setFilters] = useState({ q: "", platform: params.get("platform") ?? "", maxRate: "", sort: "newest" });
   const [vehicles, setVehicles] = useState<Vehicle[] | null>(null);
   const [error, setError] = useState("");
 
@@ -57,6 +60,7 @@ export function Vehicles() {
           {vehicles?.map((v) => <VehicleCard key={v.id} v={v} />)}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

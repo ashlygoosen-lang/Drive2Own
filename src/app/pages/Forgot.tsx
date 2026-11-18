@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
@@ -52,19 +53,20 @@ export function Forgot() {
             {step === "phone" ? (
               <form onSubmit={sendCode} className="space-y-4">
                 <Field label="Phone number"><Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required /></Field>
-                <Button type="submit" disabled={busy} className="w-full bg-[#00C853] hover:bg-[#00b84a]">{busy ? "Sending…" : "Send code"}</Button>
+                <Button type="submit" disabled={busy} className="w-full bg-[#00873a] hover:bg-[#006f2f]">{busy ? "Sending…" : "Send code"}</Button>
               </form>
             ) : (
               <form onSubmit={reset} className="space-y-4">
                 <Field label="6-digit code"><Input inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value)} required /></Field>
                 <Field label="New password" hint="At least 8 characters"><Input type="password" minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} required /></Field>
-                <Button type="submit" disabled={busy} className="w-full bg-[#00C853] hover:bg-[#00b84a]">{busy ? "Saving…" : "Update password"}</Button>
+                <Button type="submit" disabled={busy} className="w-full bg-[#00873a] hover:bg-[#006f2f]">{busy ? "Saving…" : "Update password"}</Button>
               </form>
             )}
             <p className="text-center text-sm mt-4"><Link to="/login" className="text-[#00873a] hover:underline">Back to login</Link></p>
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }

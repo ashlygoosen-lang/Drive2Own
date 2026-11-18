@@ -64,7 +64,7 @@ export function Documents() {
             <Card key={t.type}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  {d ? <CheckCircle2 className="w-5 h-5 text-[#00C853]" /> : <FileText className="w-5 h-5 text-gray-400" />}
+                  {d ? <CheckCircle2 className="w-5 h-5 text-[#00873a]" /> : <FileText className="w-5 h-5 text-gray-400" />}
                   {t.label}
                   {t.required && <span className="text-red-500">*</span>}
                   {d && <StatusBadge status={d.status === "uploaded" ? "pending" : d.status === "verified" ? "paid" : "declined"} label={d.status === "uploaded" ? "awaiting review" : d.status} />}
@@ -76,7 +76,7 @@ export function Documents() {
                 <label>
                   <input type="file" className="hidden" accept="application/pdf,image/jpeg,image/png,image/webp"
                     onChange={(e) => { void upload(t.type, e.target.files?.[0]); e.target.value = ""; }} />
-                  <span className="inline-flex items-center gap-2 h-9 px-4 rounded-md bg-[#00C853] hover:bg-[#00b84a] text-white text-sm cursor-pointer">
+                  <span className="inline-flex items-center gap-2 h-9 px-4 rounded-md bg-[#00873a] hover:bg-[#006f2f] text-white text-sm cursor-pointer">
                     <Upload className="w-4 h-4" />{uploading === t.type ? "Uploading…" : d ? "Replace" : "Upload"}
                   </span>
                 </label>

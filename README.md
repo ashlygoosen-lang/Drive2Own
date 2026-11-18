@@ -72,6 +72,10 @@ In-app notifications (bell icon) are created for requests, approvals, agreements
 
 When an owner approves a request, a rental agreement is generated and frozen for that rental. The owner (who must confirm the vehicle is insured for e-hailing use) and the driver each accept it in the dashboard, and handover is blocked until both have. The text is a template, **not legal advice**: have a South African attorney review it before launch.
 
+## Public site
+
+The landing page, FAQ, footer, and Terms / Privacy pages are written for visitors. Set `VITE_CONTACT_EMAIL` at build time to show a contact address in the footer (none is shown by default). The Terms and Privacy pages are drafts written to reflect how the app works: **have a South African attorney review them (including POPIA obligations) before launch.** Vehicle cards show a colour-matched illustration until the owner uploads a photo.
+
 ## Still not covered
 
 - Payout of online payments to owners, commissions and refunds.

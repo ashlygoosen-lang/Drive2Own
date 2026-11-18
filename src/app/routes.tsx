@@ -1,4 +1,6 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Outlet } from "react-router";
+import { ScrollToHash } from "./components/ScrollToHash";
+import { Terms, Privacy } from "./pages/Legal";
 import { Landing } from "./pages/Landing";
 import { Join } from "./pages/Join";
 import { Login } from "./pages/Login";
@@ -12,18 +14,24 @@ import { Forgot } from "./pages/Forgot";
 import { Admin } from "./pages/Admin";
 import { RequireAuth } from "./components/Common";
 
-export const router = createBrowserRouter([
-  { path: "/", Component: Landing },
-  { path: "/join", Component: Join },
-  { path: "/login", Component: Login },
-  { path: "/vehicles", Component: Vehicles },
-  { path: "/vehicles/new", element: <RequireAuth role="owner"><VehicleForm /></RequireAuth> },
-  { path: "/vehicles/:id", Component: VehicleDetail },
-  { path: "/vehicles/:id/edit", element: <RequireAuth role="owner"><VehicleForm /></RequireAuth> },
-  { path: "/dashboard", element: <RequireAuth><Dashboard /></RequireAuth> },
-  { path: "/documents", element: <RequireAuth><Documents /></RequireAuth> },
-  { path: "/forgot", Component: Forgot },
-  { path: "/notifications", element: <RequireAuth><Notifications /></RequireAuth> },
-  { path: "/admin", element: <RequireAuth><Admin /></RequireAuth> },
+function Root() {
+  return (<><ScrollToHash /><Outlet /></>);
+}
+
+export const router = createBrowserRouter([{ path: "/", Component: Root, children: [
+  { index: true, Component: Landing },
+  { path: "join", Component: Join },
+  { path: "login", Component: Login },
+  { path: "vehicles", Component: Vehicles },
+  { path: "vehicles/new", element: <RequireAuth role="owner"><VehicleForm /></RequireAuth> },
+  { path: "vehicles/:id", Component: VehicleDetail },
+  { path: "vehicles/:id/edit", element: <RequireAuth role="owner"><VehicleForm /></RequireAuth> },
+  { path: "dashboard", element: <RequireAuth><Dashboard /></RequireAuth> },
+  { path: "documents", element: <RequireAuth><Documents /></RequireAuth> },
+  { path: "forgot", Component: Forgot },
+  { path: "notifications", element: <RequireAuth><Notifications /></RequireAuth> },
+  { path: "admin", element: <RequireAuth><Admin /></RequireAuth> },
+  { path: "terms", Component: Terms },
+  { path: "privacy", Component: Privacy },
   { path: "*", Component: Landing },
-]);
+]}]);

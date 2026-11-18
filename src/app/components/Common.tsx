@@ -1,6 +1,6 @@
 import { Link, Navigate } from "react-router";
 import type { ReactNode } from "react";
-import { Car, Fuel, Settings2, Users } from "lucide-react";
+import { Fuel, Settings2, Users } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { assetUrl, money, platformLabel, type Role, type Vehicle } from "../../lib/api";
@@ -36,13 +36,32 @@ export function StatusBadge({ status, label }: { status: string; label?: string 
   return <Badge className={`${STATUS_STYLES[status] ?? ""} capitalize border-0`}>{label ?? status}</Badge>;
 }
 
-export function VehicleImage({ src, className = "" }: { src: string | null; className?: string }) {
+const COLORS: Record<string, string> = {
+  white: "#f4f4f2", silver: "#b9bec2", grey: "#7d868c", gray: "#7d868c", black: "#26292b", blue: "#2f5d9e",
+  red: "#b3322f", green: "#2f7a4f", brown: "#7a5a43", beige: "#cdbfa3", gold: "#b99a4b", orange: "#d9732b", yellow: "#e2b72d",
+};
+
+/** Clean side-view car illustration, tinted to the vehicle's colour, shown until the owner uploads a photo. */
+function CarArt({ color }: { color?: string }) {
+  const fill = COLORS[(color ?? "").toLowerCase().trim()] ?? "#9aa7a0";
+  return (
+    <svg viewBox="0 0 200 100" className="w-3/4 max-w-[260px]" role="img" aria-label="Vehicle illustration">
+      <ellipse cx="100" cy="92" rx="82" ry="4" fill="#0e3b2e" opacity="0.12" />
+      <path d="M12 74 Q10 60 26 56 L54 52 Q68 30 92 28 L132 28 Q152 31 166 52 L184 56 Q192 59 192 70 L192 78 L12 78 Z" fill={fill} stroke="#0e3b2e" strokeOpacity="0.25" />
+      <path d="M62 52 Q72 36 92 34 L108 34 L108 52 Z M114 34 L132 34 Q146 37 156 52 L114 52 Z" fill="#dfeee7" stroke="#0e3b2e" strokeOpacity="0.25" />
+      <circle cx="54" cy="78" r="14" fill="#1b2a24" /><circle cx="54" cy="78" r="6" fill="#cfd8d3" />
+      <circle cx="150" cy="78" r="14" fill="#1b2a24" /><circle cx="150" cy="78" r="6" fill="#cfd8d3" />
+    </svg>
+  );
+}
+
+export function VehicleImage({ src, className = "", color }: { src: string | null; className?: string; color?: string }) {
   const url = assetUrl(src);
   return url ? (
     <img src={url} alt="" className={`object-cover ${className}`} />
   ) : (
-    <div className={`bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center ${className}`}>
-      <Car className="w-12 h-12 text-[#00C853]/60" />
+    <div className={`bg-gradient-to-b from-[#eaf3ee] to-[#d6e7de] flex items-center justify-center ${className}`}>
+      <CarArt color={color} />
     </div>
   );
 }
@@ -51,7 +70,7 @@ export function VehicleCard({ v }: { v: Vehicle }) {
   return (
     <Link to={`/vehicles/${v.id}`}>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full">
-        <VehicleImage src={v.imageUrl} className="w-full h-44" />
+        <VehicleImage src={v.imageUrl} color={v.color} className="w-full h-44" />
         <div className="p-4 space-y-3">
           <div className="flex justify-between items-start gap-2">
             <div>

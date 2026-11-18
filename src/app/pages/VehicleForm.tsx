@@ -98,7 +98,7 @@ export function VehicleForm() {
                 <Input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setImage(e.target.files?.[0] ?? null)} />
               </Field>
               <div className="flex gap-3">
-                <Button type="submit" disabled={busy} className="bg-[#00C853] hover:bg-[#00b84a]">{busy ? "Saving…" : editing ? "Save changes" : "List vehicle"}</Button>
+                <Button type="submit" disabled={busy} className="bg-[#00873a] hover:bg-[#006f2f]">{busy ? "Saving…" : editing ? "Save changes" : "List vehicle"}</Button>
                 <Button type="button" variant="outline" onClick={() => navigate("/dashboard")}>Cancel</Button>
               </div>
             </form>

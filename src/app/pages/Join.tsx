@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router";
 import { toast } from "sonner";
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
@@ -40,9 +41,9 @@ export function Join() {
     <button
       type="button"
       onClick={() => setRole(id)}
-      className={`text-left p-4 rounded-lg border-2 transition-colors ${role === id ? "border-[#00C853] bg-green-50" : "border-gray-200 hover:border-gray-300"}`}
+      className={`text-left p-4 rounded-lg border-2 transition-colors ${role === id ? "border-[#00873a] bg-green-50" : "border-gray-200 hover:border-gray-300"}`}
     >
-      <Icon className="w-6 h-6 text-[#00C853] mb-2" />
+      <Icon className="w-6 h-6 text-[#00873a] mb-2" />
       <div className="font-semibold">{title}</div>
       <div className="text-xs text-gray-600">{text}</div>
     </button>
@@ -81,7 +82,7 @@ export function Join() {
                 <input type="checkbox" className="mt-1" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                 I agree to the Drive2Own terms and privacy policy, and understand that rental agreements are between the owner and the driver.
               </label>
-              <Button type="submit" disabled={busy} className="w-full bg-[#00C853] hover:bg-[#00b84a]">
+              <Button type="submit" disabled={busy} className="w-full bg-[#00873a] hover:bg-[#006f2f]">
                 {busy ? "Creating account…" : "Create account"}
               </Button>
               <p className="text-center text-sm text-gray-600">
@@ -91,6 +92,7 @@ export function Join() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }

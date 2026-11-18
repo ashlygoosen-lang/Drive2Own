@@ -55,7 +55,7 @@ export function Admin() {
         <div className="flex gap-2 border-b">
           {(["uploaded", "verified", "rejected"] as const).map((s) => (
             <button key={s} onClick={() => setFilter(s)}
-              className={`px-4 py-2 -mb-px border-b-2 capitalize ${filter === s ? "border-[#00C853] text-[#00873a] font-medium" : "border-transparent text-gray-600"}`}>
+              className={`px-4 py-2 -mb-px border-b-2 capitalize ${filter === s ? "border-[#00873a] text-[#00873a] font-medium" : "border-transparent text-gray-600"}`}>
               {s === "uploaded" ? "To review" : s}
             </button>
           ))}
@@ -74,7 +74,7 @@ export function Admin() {
               </div>
               {filter !== "verified" && (
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" className="bg-[#00C853] hover:bg-[#00b84a]" onClick={() => review(d.id, "verified")}>Verify</Button>
+                  <Button size="sm" className="bg-[#00873a] hover:bg-[#006f2f]" onClick={() => review(d.id, "verified")}>Verify</Button>
                   <Input className="flex-1 min-w-[200px] h-8" placeholder="Reason (required to reject)" value={notes[d.id] ?? ""} onChange={(e) => setNotes({ ...notes, [d.id]: e.target.value })} />
                   <Button size="sm" variant="outline" onClick={() => review(d.id, "rejected")}>Reject</Button>
                 </div>
