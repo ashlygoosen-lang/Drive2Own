@@ -32,8 +32,8 @@ const STATUS_STYLES: Record<string, string> = {
   hidden: "bg-gray-100 text-gray-600",
 };
 
-export function StatusBadge({ status }: { status: string }) {
-  return <Badge className={`${STATUS_STYLES[status] ?? ""} capitalize border-0`}>{status}</Badge>;
+export function StatusBadge({ status, label }: { status: string; label?: string }) {
+  return <Badge className={`${STATUS_STYLES[status] ?? ""} capitalize border-0`}>{label ?? status}</Badge>;
 }
 
 export function VehicleImage({ src, className = "" }: { src: string | null; className?: string }) {

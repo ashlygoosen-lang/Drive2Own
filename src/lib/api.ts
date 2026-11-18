@@ -54,7 +54,7 @@ export const platformLabel = (p: string) => PLATFORMS.find((x) => x.id === p)?.l
 
 export interface User {
   id: number; role: Role; fullName: string; phone: string; email: string | null;
-  city: string; platforms: Platform[]; createdAt: string;
+  city: string; platforms: Platform[]; createdAt: string; isAdmin: boolean;
 }
 export interface Vehicle {
   id: number; ownerId: number; ownerName?: string; make: string; model: string; year: number; plate?: string;
@@ -67,14 +67,34 @@ export interface Rental {
   id: number; status: RentalStatus; platform: Platform; startDate: string; weeks: number;
   weeklyRate: number; deposit: number; total: number; message: string; createdAt: string;
   vehicle: { id: number; make: string; model: string; year: number; color: string; imageUrl: string | null };
+  agreement: { exists: boolean; ownerAccepted: boolean; driverAccepted: boolean; insuranceConfirmed: boolean };
   owner: { id: number; name: string; phone: string | null };
   driver: { id: number; name: string; phone: string | null };
 }
 export interface Payment {
   id: number; rentalId: number; kind: 'deposit' | 'weekly'; amount: number; dueDate: string;
-  status: 'pending' | 'paid' | 'overdue' | 'cancelled'; paidAt: string | null;
+  status: 'pending' | 'paid' | 'overdue' | 'cancelled'; paidAt: string | null; paidVia: string | null;
 }
-export interface Doc { id: number; type: string; name: string; size: number; mime: string; uploadedAt: string }
+export interface Doc {
+  id: number; type: string; name: string; size: number; mime: string; uploadedAt: string;
+  status: 'uploaded' | 'verified' | 'rejected'; note: string | null;
+}
+export interface AppNotification { id: number; title: string; body: string; link: string | null; read: boolean; createdAt: string }
 export interface DocType { type: string; label: string; required: boolean }
+
+/** Starts a PayFast payment: fetches the signed form and submits it in the browser. */
+export async function payOnline(paymentId: number) {
+  const { url, fields } = await api<{ url: string; fields: Record<string, string> }>(`/payments/${paymentId}/payfast`, { method: 'POST' });
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = url;
+  for (const [k, v] of Object.entries(fields)) {
+    const i = document.createElement('input');
+    i.type = 'hidden'; i.name = k; i.value = v;
+    form.appendChild(i);
+  }
+  document.body.appendChild(form);
+  form.submit();
+}
 
 export const money = (n: number) => `R ${n.toLocaleString('en-ZA')}`;

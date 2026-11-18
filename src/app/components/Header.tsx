@@ -3,6 +3,7 @@ import { Car, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { useAuth } from "../../lib/auth";
+import { NotificationBell } from "./NotificationBell";
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -21,6 +22,8 @@ export function Header() {
         <>
           <NavLink to="/dashboard" className={link} onClick={close}>Dashboard</NavLink>
           <NavLink to="/documents" className={link} onClick={close}>Documents</NavLink>
+          {user.isAdmin && <NavLink to="/admin" className={link} onClick={close}>Admin</NavLink>}
+          <NotificationBell />
           <Button variant="outline" onClick={doLogout}>Logout</Button>
         </>
       ) : (

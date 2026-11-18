@@ -8,6 +8,7 @@ import { db, VEHICLE_IMG_DIR } from '../db.js';
 import { requireAuth, requireRole } from '../auth.js';
 import { HttpError } from '../errors.js';
 import { PLATFORMS } from '../constants.js';
+import { signatureMatches } from '../files.js';
 
 export const vehiclesRouter = Router();
 
@@ -153,6 +154,7 @@ vehiclesRouter.post('/:id/image', requireAuth, requireRole('owner'), imageUpload
   const file = req.file;
   if (!file) throw new HttpError(400, 'No image uploaded');
   try {
+    if (!signatureMatches(file.path, file.mimetype)) throw new HttpError(400, 'That file is not a valid image');
     const cur = ownVehicle(Number(req.params.id), req.user!.id);
     if (cur.image_url) fs.rmSync(path.join(VEHICLE_IMG_DIR, path.basename(cur.image_url)), { force: true });
     db.prepare('UPDATE vehicles SET image_url = ? WHERE id = ?').run(`/uploads/vehicles/${file.filename}`, cur.id);

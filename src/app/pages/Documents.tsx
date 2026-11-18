@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Header } from "../components/Header";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
-import { fmtDate } from "../components/Common";
+import { StatusBadge, fmtDate } from "../components/Common";
 import { CheckCircle2, FileText, Trash2, Upload } from "lucide-react";
 import { api, openDocument, type Doc, type DocType } from "../../lib/api";
 
@@ -67,8 +67,10 @@ export function Documents() {
                   {d ? <CheckCircle2 className="w-5 h-5 text-[#00C853]" /> : <FileText className="w-5 h-5 text-gray-400" />}
                   {t.label}
                   {t.required && <span className="text-red-500">*</span>}
+                  {d && <StatusBadge status={d.status === "uploaded" ? "pending" : d.status === "verified" ? "paid" : "declined"} label={d.status === "uploaded" ? "awaiting review" : d.status} />}
                 </CardTitle>
                 {d && <CardDescription>{d.name} · uploaded {fmtDate(d.uploadedAt)}</CardDescription>}
+                {d?.status === "rejected" && d.note && <p className="text-sm text-red-600">Rejected: {d.note}. Please upload a corrected copy.</p>}
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">
                 <label>

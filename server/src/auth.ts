@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import type { NextFunction, Request, Response } from 'express';
 import { HttpError } from './errors.js';
+import { db } from './db.js';
 import type { Role } from './constants.js';
 
 const secret = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'dev-only-secret-change-me');
@@ -29,3 +30,8 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction) {
 
 export const requireRole = (role: Role) => (req: Request, _res: Response, next: NextFunction) =>
   req.user?.role === role ? next() : next(new HttpError(403, `Only ${role}s can do this`));
+
+export function requireAdmin(req: Request, _res: Response, next: NextFunction) {
+  const u = db.prepare('SELECT is_admin FROM users WHERE id = ?').get(req.user?.id ?? 0) as { is_admin: number } | undefined;
+  u?.is_admin ? next() : next(new HttpError(403, 'Admins only'));
+}

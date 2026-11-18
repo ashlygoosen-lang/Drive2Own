@@ -5,7 +5,7 @@ import { Header } from "../components/Header";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { StatusBadge, VehicleImage, fmtDate } from "../components/Common";
-import { api, money, openDocument, platformLabel, type Doc, type Payment, type Rental, type Vehicle } from "../../lib/api";
+import { api, money, openDocument, payOnline, platformLabel, type Doc, type Payment, type Rental, type Vehicle } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 
 const msg = (e: unknown) => (e instanceof Error ? e.message : "Something went wrong");
@@ -18,6 +18,8 @@ function Stat({ label, value }: { label: string; value: string | number }) {
 
 function Payments({ rental, isOwner }: { rental: Rental; isOwner: boolean }) {
   const [payments, setPayments] = useState<Payment[] | null>(null);
+  const [online, setOnline] = useState(false);
+  useEffect(() => { api<{ onlinePayments: boolean }>("/meta").then((m) => setOnline(m.onlinePayments)).catch(() => {}); }, []);
   const load = useCallback(
     () => api<{ payments: Payment[] }>(`/rentals/${rental.id}/payments`).then((r) => setPayments(r.payments)).catch((e) => toast.error(msg(e))),
     [rental.id],
@@ -44,11 +46,61 @@ function Payments({ rental, isOwner }: { rental: Rental; isOwner: boolean }) {
                 {isOwner && (p.status === "pending" || p.status === "overdue") && (
                   <Button size="sm" variant="outline" onClick={() => markPaid(p)}>Mark paid</Button>
                 )}
+                {!isOwner && online && (p.status === "pending" || p.status === "overdue") && (
+                  <Button size="sm" className="bg-[#00C853] hover:bg-[#00b84a]" onClick={() => payOnline(p.id).catch((e) => toast.error(msg(e)))}>Pay online</Button>
+                )}
+                {p.status === "paid" && p.paidVia === "payfast" && <span className="text-xs text-gray-500">via PayFast</span>}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function AgreementPanel({ r, isOwner, reload }: { r: Rental; isOwner: boolean; reload: () => void }) {
+  const [text, setText] = useState<string | null>(null);
+  const [insured, setInsured] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const a = r.agreement;
+  const mine = isOwner ? a.ownerAccepted : a.driverAccepted;
+
+  const toggle = async () => {
+    if (text) return setText(null);
+    try { setText((await api<{ text: string }>(`/rentals/${r.id}/agreement`)).text); } catch (e) { toast.error(msg(e)); }
+  };
+  const accept = async () => {
+    setBusy(true);
+    try {
+      await api(`/rentals/${r.id}/agreement/accept`, { method: "POST", body: isOwner ? { insuranceConfirmed: insured } : {} });
+      toast.success("Agreement accepted");
+      reload();
+    } catch (e) { toast.error(msg(e)); } finally { setBusy(false); }
+  };
+
+  return (
+    <div className="border-t pt-3 space-y-2 text-sm">
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="font-medium">Rental agreement</span>
+        <span className={a.ownerAccepted ? "text-green-700" : "text-gray-500"}>Owner: {a.ownerAccepted ? "accepted" : "waiting"}</span>
+        <span className={a.driverAccepted ? "text-green-700" : "text-gray-500"}>Driver: {a.driverAccepted ? "accepted" : "waiting"}</span>
+        <Button size="sm" variant="ghost" onClick={toggle}>{text ? "Hide" : "Read"} agreement</Button>
+      </div>
+      {text && <pre className="whitespace-pre-wrap text-xs bg-gray-50 border rounded p-3 max-h-72 overflow-y-auto font-sans">{text}</pre>}
+      {r.status === "approved" && !mine && (
+        <div className="space-y-2">
+          {isOwner && (
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input type="checkbox" className="mt-0.5" checked={insured} onChange={(e) => setInsured(e.target.checked)} />
+              I confirm this vehicle is comprehensively insured and the policy covers e-hailing use.
+            </label>
+          )}
+          <Button size="sm" disabled={busy || (isOwner && !insured)} className="bg-[#00C853] hover:bg-[#00b84a]" onClick={accept}>
+            Accept agreement
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -93,7 +145,7 @@ function RentalCard({ r, isOwner, reload }: { r: Rental; isOwner: boolean; reloa
             <Button size="sm" variant="outline" onClick={() => act("decline", "Request declined")}>Decline</Button>
           </>)}
           {isOwner && r.status === "approved" && (<>
-            <Button size="sm" className="bg-[#00C853] hover:bg-[#00b84a]" onClick={() => act("activate", "Vehicle handed over — payments scheduled")}>Hand over vehicle</Button>
+            <Button size="sm" disabled={!r.agreement.ownerAccepted || !r.agreement.driverAccepted} title={!r.agreement.ownerAccepted || !r.agreement.driverAccepted ? "Both parties must accept the agreement first" : undefined} className="bg-[#00C853] hover:bg-[#00b84a]" onClick={() => act("activate", "Vehicle handed over — payments scheduled")}>Hand over vehicle</Button>
             <Button size="sm" variant="outline" onClick={() => act("decline", "Request declined")}>Withdraw approval</Button>
           </>)}
           {isOwner && r.status === "active" && (
@@ -108,12 +160,14 @@ function RentalCard({ r, isOwner, reload }: { r: Rental; isOwner: boolean; reloa
           {hasPayments && <Button size="sm" variant="ghost" onClick={() => setShowPay(!showPay)}>{showPay ? "Hide" : "View"} payments</Button>}
         </div>
 
+        {r.agreement.exists && ["approved", "active", "completed"].includes(r.status) && <AgreementPanel r={r} isOwner={isOwner} reload={reload} />}
+
         {docs && (
           <div className="text-sm space-y-1 border-t pt-3">
             {docs.length === 0 && <p className="text-gray-500">The driver hasn't uploaded any documents.</p>}
             {docs.map((d) => (
               <button key={d.id} className="block text-[#00873a] hover:underline" onClick={() => openDocument(d.id).catch((e) => toast.error(msg(e)))}>
-                {d.type.replace(/_/g, " ")} — {d.name}
+                {d.type.replace(/_/g, " ")} — {d.name} ({d.status === "uploaded" ? "not yet verified" : d.status})
               </button>
             ))}
           </div>

@@ -90,3 +90,39 @@ CREATE INDEX IF NOT EXISTS idx_rentals_vehicle ON rentals(vehicle_id);
 CREATE INDEX IF NOT EXISTS idx_rentals_driver ON rentals(driver_id);
 CREATE INDEX IF NOT EXISTS idx_payments_rental ON payments(rental_id);
 `);
+
+// ---- Idempotent migrations (safe on both fresh and existing databases) ----
+function addColumn(table: string, column: string, definition: string) {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+  if (!cols.some((c) => c.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+}
+addColumn('users', 'is_admin', 'INTEGER NOT NULL DEFAULT 0');
+addColumn('documents', 'status', "TEXT NOT NULL DEFAULT 'uploaded'");
+addColumn('documents', 'review_note', 'TEXT');
+addColumn('documents', 'reviewed_at', 'TEXT');
+addColumn('rentals', 'agreement_text', 'TEXT');
+addColumn('rentals', 'owner_accepted_at', 'TEXT');
+addColumn('rentals', 'driver_accepted_at', 'TEXT');
+addColumn('rentals', 'insurance_confirmed', 'INTEGER NOT NULL DEFAULT 0');
+addColumn('payments', 'paid_via', 'TEXT');
+addColumn('payments', 'provider_ref', 'TEXT');
+
+db.exec(`
+CREATE TABLE IF NOT EXISTS notifications (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL DEFAULT '',
+  link TEXT,
+  read_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, read_at);
+
+CREATE TABLE IF NOT EXISTS password_resets (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  code_hash TEXT NOT NULL,
+  expires_at INTEGER NOT NULL,
+  attempts INTEGER NOT NULL DEFAULT 0
+);
+`);

@@ -57,6 +57,7 @@ export function Login() {
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <Link to="/forgot" className="text-sm text-[#00873a] hover:underline">Forgot password?</Link>
               </div>
               <Button type="submit" disabled={busy} className="w-full bg-[#00C853] hover:bg-[#00b84a]">
                 {busy ? "Signing in…" : "Sign in"}

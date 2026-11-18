@@ -7,6 +7,9 @@ import { Documents } from "./pages/Documents";
 import { Vehicles } from "./pages/Vehicles";
 import { VehicleDetail } from "./pages/VehicleDetail";
 import { VehicleForm } from "./pages/VehicleForm";
+import { Notifications } from "./pages/Notifications";
+import { Forgot } from "./pages/Forgot";
+import { Admin } from "./pages/Admin";
 import { RequireAuth } from "./components/Common";
 
 export const router = createBrowserRouter([
@@ -19,5 +22,8 @@ export const router = createBrowserRouter([
   { path: "/vehicles/:id/edit", element: <RequireAuth role="owner"><VehicleForm /></RequireAuth> },
   { path: "/dashboard", element: <RequireAuth><Dashboard /></RequireAuth> },
   { path: "/documents", element: <RequireAuth><Documents /></RequireAuth> },
+  { path: "/forgot", Component: Forgot },
+  { path: "/notifications", element: <RequireAuth><Notifications /></RequireAuth> },
+  { path: "/admin", element: <RequireAuth><Admin /></RequireAuth> },
   { path: "*", Component: Landing },
 ]);

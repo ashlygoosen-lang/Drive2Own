@@ -6,6 +6,7 @@ import path from 'node:path';
 import { z } from 'zod';
 import { db, DOC_DIR } from '../db.js';
 import { requireAuth } from '../auth.js';
+import { signatureMatches } from '../files.js';
 import { HttpError } from '../errors.js';
 import { ALL_DOCUMENT_TYPES, DOCUMENT_TYPES } from '../constants.js';
 
@@ -14,9 +15,9 @@ documentsRouter.use(requireAuth);
 
 interface DocRow {
   id: number; user_id: number; type: string; original_name: string; stored_name: string;
-  mime: string; size: number; uploaded_at: string;
+  mime: string; size: number; uploaded_at: string; status: string; review_note: string | null;
 }
-const dto = (d: DocRow) => ({ id: d.id, type: d.type, name: d.original_name, size: d.size, mime: d.mime, uploadedAt: d.uploaded_at });
+const dto = (d: DocRow) => ({ id: d.id, type: d.type, name: d.original_name, size: d.size, mime: d.mime, uploadedAt: d.uploaded_at, status: d.status, note: d.review_note });
 
 const MIME_EXT: Record<string, string> = { 'application/pdf': '.pdf', 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp' };
 
@@ -44,6 +45,7 @@ documentsRouter.post('/', upload.single('file'), (req, res) => {
   const file = req.file;
   if (!file) throw new HttpError(400, 'No file uploaded');
   try {
+    if (!signatureMatches(file.path, file.mimetype)) throw new HttpError(400, 'File content does not match its type');
     const { type } = z.object({ type: z.enum(ALL_DOCUMENT_TYPES) }).parse(req.body);
     const allowed = DOCUMENT_TYPES[req.user!.role].map((d) => d.type as string);
     if (!allowed.includes(type)) throw new HttpError(400, 'That document type is not needed for your account');
@@ -76,7 +78,8 @@ documentsRouter.get('/:id/file', (req, res) => {
   const d = db.prepare('SELECT * FROM documents WHERE id = ?').get(Number(req.params.id)) as DocRow | undefined;
   if (!d) throw new HttpError(404, 'Document not found');
   const me = req.user!.id;
-  const allowed = d.user_id === me || !!db.prepare(`
+  const isAdmin = !!(db.prepare('SELECT is_admin FROM users WHERE id = ?').get(me) as { is_admin: number } | undefined)?.is_admin;
+  const allowed = isAdmin || d.user_id === me || !!db.prepare(`
     SELECT 1 FROM rentals r JOIN vehicles v ON v.id = r.vehicle_id
     WHERE r.driver_id = ? AND v.owner_id = ? AND r.status IN ('pending','approved','active','completed')`).get(d.user_id, me);
   if (!allowed) throw new HttpError(403, 'You do not have access to this document');

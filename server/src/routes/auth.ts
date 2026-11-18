@@ -4,7 +4,9 @@ import { z } from 'zod';
 import { db } from '../db.js';
 import { requireAuth, signToken } from '../auth.js';
 import { HttpError } from '../errors.js';
+import crypto from 'node:crypto';
 import { PLATFORMS, ROLES } from '../constants.js';
+import { notify, sendSms, smsEnabled } from '../notify.js';
 
 export const authRouter = Router();
 
@@ -17,12 +19,12 @@ export function normalizePhone(raw: string): string {
 
 interface UserRow {
   id: number; role: 'owner' | 'driver'; full_name: string; phone: string;
-  email: string | null; city: string; platforms: string; password_hash: string; created_at: string;
+  email: string | null; city: string; platforms: string; password_hash: string; created_at: string; is_admin: number;
 }
 
 export const publicUser = (u: UserRow) => ({
   id: u.id, role: u.role, fullName: u.full_name, phone: u.phone, email: u.email,
-  city: u.city, platforms: JSON.parse(u.platforms) as string[], createdAt: u.created_at,
+  city: u.city, platforms: JSON.parse(u.platforms) as string[], createdAt: u.created_at, isAdmin: !!u.is_admin,
 });
 
 const registerSchema = z.object({
@@ -80,4 +82,42 @@ authRouter.patch('/me', requireAuth, (req, res) => {
     cur.id,
   );
   res.json({ user: publicUser(db.prepare('SELECT * FROM users WHERE id = ?').get(cur.id) as UserRow) });
+});
+
+// ---- Password reset (6-digit code sent by SMS, valid 15 minutes, 5 attempts) ----
+const hashCode = (userId: number, code: string) =>
+  crypto.createHash('sha256').update(`${userId}:${code}:${process.env.JWT_SECRET ?? 'dev'}`).digest('hex');
+
+authRouter.post('/forgot', async (req, res) => {
+  const { phone } = z.object({ phone: z.string().min(5) }).parse(req.body);
+  const user = db.prepare('SELECT * FROM users WHERE phone = ?').get(normalizePhone(phone)) as UserRow | undefined;
+  let devCode: string | undefined;
+  if (user) {
+    const code = String(crypto.randomInt(100000, 1000000));
+    db.prepare(`INSERT INTO password_resets (user_id, code_hash, expires_at, attempts) VALUES (?,?,?,0)
+      ON CONFLICT(user_id) DO UPDATE SET code_hash=excluded.code_hash, expires_at=excluded.expires_at, attempts=0`)
+      .run(user.id, hashCode(user.id, code), Date.now() + 15 * 60 * 1000);
+    await sendSms(user.phone, `Your Drive2Own reset code is ${code}. It expires in 15 minutes.`).catch(() => {});
+    // Only exposed when no SMS provider is configured outside production, so local development works.
+    if (!smsEnabled() && process.env.NODE_ENV !== 'production') devCode = code;
+  }
+  // Same response whether or not the account exists, so phone numbers can't be probed.
+  res.json({ ok: true, ...(devCode ? { devCode } : {}) });
+});
+
+authRouter.post('/reset', (req, res) => {
+  const b = z.object({ phone: z.string().min(5), code: z.string().length(6), password: z.string().min(8).max(100) }).parse(req.body);
+  const user = db.prepare('SELECT * FROM users WHERE phone = ?').get(normalizePhone(b.phone)) as UserRow | undefined;
+  const bad = new HttpError(400, 'Invalid or expired code');
+  if (!user) throw bad;
+  const r = db.prepare('SELECT * FROM password_resets WHERE user_id = ?').get(user.id) as { code_hash: string; expires_at: number; attempts: number } | undefined;
+  if (!r || r.expires_at < Date.now() || r.attempts >= 5) throw bad;
+  if (hashCode(user.id, b.code) !== r.code_hash) {
+    db.prepare('UPDATE password_resets SET attempts = attempts + 1 WHERE user_id = ?').run(user.id);
+    throw bad;
+  }
+  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(bcrypt.hashSync(b.password, 10), user.id);
+  db.prepare('DELETE FROM password_resets WHERE user_id = ?').run(user.id);
+  notify(user.id, { title: 'Your password was changed', body: 'If this was not you, reset it again and contact support.' });
+  res.json({ ok: true });
 });
