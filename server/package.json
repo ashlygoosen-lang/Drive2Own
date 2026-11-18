@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.json",
     "seed": "tsx src/seed.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "make-admin": "tsx src/make-admin.ts"
+    "make-admin": "tsx src/make-admin.ts",
+    "make-admin:prod": "node dist/make-admin.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

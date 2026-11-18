@@ -54,6 +54,18 @@ Copy `server/.env.example` for the available settings. **`JWT_SECRET` is require
 | `POST /api/payments/:id/payfast`, `POST /api/payfast/itn` | driver / PayFast | Online payment |
 | `GET /api/admin/stats`, `…/documents`, `POST …/documents/:id/review` | admin | Document verification |
 
+## Deploy (Docker: Railway, Render, Fly.io, a VPS)
+
+The included `Dockerfile` builds the site and API into a single image; one process serves both on port 4000.
+
+1. Create a service from this GitHub repo (the platform detects the Dockerfile).
+2. Attach a **persistent volume mounted at `/data`**. The SQLite database and all uploads live there; without it you lose data on every deploy. Back this volume up.
+3. Set environment variables: `JWT_SECRET` (long random string, required), `PUBLIC_SITE_URL` and `PUBLIC_API_URL` (both your public https URL), and optionally the PayFast, Twilio and `VITE_CONTACT_EMAIL` (build argument) settings from `server/.env.example`. `CLIENT_ORIGIN` is only needed if the site is served from a different domain.
+4. Run it as **a single instance** (SQLite is a single-file database).
+5. Create your first admin: register an account on the site, then in the service's shell run `cd /app/server && node dist/make-admin.js 0821234567`.
+
+Do not run the demo seed in production. Without Twilio configured, password-reset codes cannot be delivered in production, so set up SMS before launch. A ready-made GitHub Actions workflow is in `docs/ci.yml.example`: copy it to `.github/workflows/ci.yml` (it type-checks and builds on every push; pushing workflow files needs a token with the `workflow` scope, or add it through the GitHub web UI).
+
 ## Online payments (PayFast)
 
 Set `PAYFAST_MERCHANT_ID`, `PAYFAST_MERCHANT_KEY` (and `PAYFAST_PASSPHRASE`, `PAYFAST_SANDBOX=1` while testing) plus `PUBLIC_API_URL` / `PUBLIC_SITE_URL` (see `server/.env.example`). Drivers then get a **Pay online** button on each pending payment. PayFast calls `POST /api/payfast/itn`; a payment is only marked paid after the signature, merchant, amount and PayFast's own server-side validation all pass. Without these settings, payments stay manual (owners mark them as received).
