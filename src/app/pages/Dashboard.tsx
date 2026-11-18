@@ -1,284 +1,241 @@
-import { Header } from "../components/Header";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Progress } from "../components/ui/progress";
-import { 
-  CheckCircle2, 
-  Car, 
-  TrendingUp, 
-  Calendar,
-  FileText,
-  DollarSign,
-  Award
-} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
+import { toast } from "sonner";
+import { Header } from "../components/Header";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { StatusBadge, VehicleImage, fmtDate } from "../components/Common";
+import { api, money, openDocument, platformLabel, type Doc, type Payment, type Rental, type Vehicle } from "../../lib/api";
+import { useAuth } from "../../lib/auth";
+
+const msg = (e: unknown) => (e instanceof Error ? e.message : "Something went wrong");
+
+function Stat({ label, value }: { label: string; value: string | number }) {
+  return (
+    <Card><CardContent className="p-5"><div className="text-sm text-gray-500">{label}</div><div className="text-2xl font-bold">{value}</div></CardContent></Card>
+  );
+}
+
+function Payments({ rental, isOwner }: { rental: Rental; isOwner: boolean }) {
+  const [payments, setPayments] = useState<Payment[] | null>(null);
+  const load = useCallback(
+    () => api<{ payments: Payment[] }>(`/rentals/${rental.id}/payments`).then((r) => setPayments(r.payments)).catch((e) => toast.error(msg(e))),
+    [rental.id],
+  );
+  useEffect(() => { void load(); }, [load]);
+  const markPaid = async (p: Payment) => {
+    try { await api(`/rentals/${rental.id}/payments/${p.id}/paid`, { method: "POST" }); await load(); }
+    catch (e) { toast.error(msg(e)); }
+  };
+  if (!payments) return <p className="text-sm text-gray-500">Loading payments…</p>;
+  if (payments.length === 0) return <p className="text-sm text-gray-500">No payments scheduled yet.</p>;
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead><tr className="text-left text-gray-500"><th className="py-1">Due</th><th>Type</th><th>Amount</th><th>Status</th><th /></tr></thead>
+        <tbody>
+          {payments.map((p) => (
+            <tr key={p.id} className="border-t">
+              <td className="py-2">{fmtDate(p.dueDate)}</td>
+              <td className="capitalize">{p.kind}</td>
+              <td>{money(p.amount)}</td>
+              <td><StatusBadge status={p.status} /></td>
+              <td className="text-right">
+                {isOwner && (p.status === "pending" || p.status === "overdue") && (
+                  <Button size="sm" variant="outline" onClick={() => markPaid(p)}>Mark paid</Button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function RentalCard({ r, isOwner, reload }: { r: Rental; isOwner: boolean; reload: () => void }) {
+  const [showPay, setShowPay] = useState(false);
+  const [docs, setDocs] = useState<Doc[] | null>(null);
+  const act = async (action: string, ok: string) => {
+    try { await api(`/rentals/${r.id}/${action}`, { method: "POST" }); toast.success(ok); reload(); }
+    catch (e) { toast.error(msg(e)); }
+  };
+  const loadDocs = async () => {
+    try { setDocs((await api<{ documents: Doc[] }>(`/documents/driver/${r.driver.id}`)).documents); }
+    catch (e) { toast.error(msg(e)); }
+  };
+  const other = isOwner ? r.driver : r.owner;
+  const hasPayments = r.status === "active" || r.status === "completed";
+
+  return (
+    <Card>
+      <CardContent className="p-5 space-y-4">
+        <div className="flex gap-4">
+          <VehicleImage src={r.vehicle.imageUrl} className="w-24 h-20 rounded-lg shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Link to={`/vehicles/${r.vehicle.id}`} className="font-semibold hover:underline">{r.vehicle.year} {r.vehicle.make} {r.vehicle.model}</Link>
+              <StatusBadge status={r.status} />
+            </div>
+            <p className="text-sm text-gray-600">
+              {isOwner ? "Driver" : "Owner"}: {other.name}{other.phone && ` · ${other.phone}`}
+            </p>
+            <p className="text-sm text-gray-600">
+              {platformLabel(r.platform)} · from {fmtDate(r.startDate)} · {r.weeks} wk · {money(r.weeklyRate)}/wk
+            </p>
+            {r.message && <p className="text-sm text-gray-500 italic mt-1">“{r.message}”</p>}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {isOwner && r.status === "pending" && (<>
+            <Button size="sm" className="bg-[#00C853] hover:bg-[#00b84a]" onClick={() => act("approve", "Request approved")}>Approve</Button>
+            <Button size="sm" variant="outline" onClick={() => act("decline", "Request declined")}>Decline</Button>
+          </>)}
+          {isOwner && r.status === "approved" && (<>
+            <Button size="sm" className="bg-[#00C853] hover:bg-[#00b84a]" onClick={() => act("activate", "Vehicle handed over — payments scheduled")}>Hand over vehicle</Button>
+            <Button size="sm" variant="outline" onClick={() => act("decline", "Request declined")}>Withdraw approval</Button>
+          </>)}
+          {isOwner && r.status === "active" && (
+            <Button size="sm" variant="outline" onClick={() => act("complete", "Rental completed")}>Mark returned / complete</Button>
+          )}
+          {!isOwner && (r.status === "pending" || r.status === "approved") && (
+            <Button size="sm" variant="outline" onClick={() => act("cancel", "Request cancelled")}>Cancel request</Button>
+          )}
+          {isOwner && ["pending", "approved", "active"].includes(r.status) && (
+            <Button size="sm" variant="ghost" onClick={loadDocs}>Review driver documents</Button>
+          )}
+          {hasPayments && <Button size="sm" variant="ghost" onClick={() => setShowPay(!showPay)}>{showPay ? "Hide" : "View"} payments</Button>}
+        </div>
+
+        {docs && (
+          <div className="text-sm space-y-1 border-t pt-3">
+            {docs.length === 0 && <p className="text-gray-500">The driver hasn't uploaded any documents.</p>}
+            {docs.map((d) => (
+              <button key={d.id} className="block text-[#00873a] hover:underline" onClick={() => openDocument(d.id).catch((e) => toast.error(msg(e)))}>
+                {d.type.replace(/_/g, " ")} — {d.name}
+              </button>
+            ))}
+          </div>
+        )}
+        {showPay && <div className="border-t pt-3"><Payments rental={r} isOwner={isOwner} /></div>}
+      </CardContent>
+    </Card>
+  );
+}
+
+function RentalList({ rentals, isOwner, reload }: { rentals: Rental[]; isOwner: boolean; reload: () => void }) {
+  if (rentals.length === 0) return <p className="text-gray-500">Nothing here yet.</p>;
+  return <div className="space-y-4">{rentals.map((r) => <RentalCard key={r.id} r={r} isOwner={isOwner} reload={reload} />)}</div>;
+}
 
 export function Dashboard() {
-  // Mock data - in production this would come from backend
-  const userData = {
-    name: "Thabo Molefe",
-    memberSince: "January 2026",
-    ownershipProgress: 35,
-    totalPaid: 42500,
-    remainingBalance: 78500,
-    monthlyPayment: 3500,
-    nextPaymentDate: "March 20, 2026",
-    vehicleModel: "Toyota Corolla Quest 2023",
-    estimatedOwnershipDate: "January 2028",
+  const { user } = useAuth();
+  const isOwner = user?.role === "owner";
+  const [rentals, setRentals] = useState<Rental[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [docCount, setDocCount] = useState(0);
+  const [tab, setTab] = useState<"rentals" | "vehicles">("rentals");
+
+  const load = useCallback(async () => {
+    try {
+      const r = await api<{ rentals: Rental[] }>("/rentals");
+      setRentals(r.rentals);
+      if (isOwner) setVehicles((await api<{ vehicles: Vehicle[] }>("/vehicles/mine")).vehicles);
+      else setDocCount((await api<{ documents: Doc[] }>("/documents")).documents.filter((d) => ["id_document", "drivers_license", "prdp"].includes(d.type)).length);
+    } catch (e) { toast.error(msg(e)); }
+  }, [isOwner]);
+  useEffect(() => { void load(); }, [load]);
+
+  const toggleHidden = async (v: Vehicle) => {
+    try { await api(`/vehicles/${v.id}/visibility`, { method: "PATCH", body: { hidden: v.status !== "hidden" } }); await load(); }
+    catch (e) { toast.error(msg(e)); }
+  };
+  const remove = async (v: Vehicle) => {
+    if (!confirm(`Delete ${v.make} ${v.model}? This cannot be undone.`)) return;
+    try { await api(`/vehicles/${v.id}`, { method: "DELETE" }); await load(); }
+    catch (e) { toast.error(msg(e)); }
   };
 
-  const verifiedDocuments = [
-    { name: "SA ID Front", verified: true },
-    { name: "SA ID Back", verified: true },
-    { name: "PrDP", verified: true },
-    { name: "Bank Statements", verified: true },
-    { name: "Uber Screenshot", verified: true },
-    { name: "Proof of Residence", verified: true },
-  ];
-
-  const recentPayments = [
-    { date: "March 1, 2026", amount: 3500, status: "Completed" },
-    { date: "February 1, 2026", amount: 3500, status: "Completed" },
-    { date: "January 15, 2026", amount: 5000, status: "Completed" },
-  ];
+  const pending = rentals.filter((r) => r.status === "pending").length;
+  const active = rentals.filter((r) => r.status === "active").length;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome back, {userData.name}! 👋</h1>
-          <p className="text-gray-600">Track your journey to vehicle ownership</p>
-        </div>
-
-        {/* Profile Verification Card */}
-        <Card className="mb-8 bg-gradient-to-br from-[#00C853] to-[#00a843] text-white">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span className="font-medium">Verified SA ID ✓</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span className="font-medium">PrDP Status: Active ✓</span>
-                </div>
-                <div className="text-sm text-green-100">
-                  Member since {userData.memberSince}
-                </div>
-              </div>
-              <Link to="/documents">
-                <Button variant="outline" className="bg-white text-[#00C853] hover:bg-gray-100">
-                  View Documents
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Key Metrics */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Ownership Progress</p>
-                  <p className="text-2xl font-bold">{userData.ownershipProgress}%</p>
-                </div>
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-[#00C853]" />
-                </div>
-              </div>
-              <Progress value={userData.ownershipProgress} className="mt-4 h-2" />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Paid</p>
-                  <p className="text-2xl font-bold">R {userData.totalPaid.toLocaleString()}</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <DollarSign className="w-6 h-6 text-blue-600" />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                R {userData.remainingBalance.toLocaleString()} remaining
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Monthly Payment</p>
-                  <p className="text-2xl font-bold">R {userData.monthlyPayment.toLocaleString()}</p>
-                </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-purple-600" />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Next: {userData.nextPaymentDate}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Est. Ownership</p>
-                  <p className="text-lg font-bold">{userData.estimatedOwnershipDate}</p>
-                </div>
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                  <Award className="w-6 h-6 text-orange-600" />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                22 months remaining
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Vehicle Info */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Car className="w-5 h-5 text-[#00C853]" />
-                Your Vehicle
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="font-semibold text-lg mb-2">{userData.vehicleModel}</h3>
-                  <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <span className="text-gray-600">Status:</span>{' '}
-                      <span className="font-medium text-[#00C853]">Active</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Condition:</span>{' '}
-                      <span className="font-medium">Excellent</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Mileage:</span>{' '}
-                      <span className="font-medium">45,230 km</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Last Service:</span>{' '}
-                      <span className="font-medium">Feb 2026</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <h4 className="font-medium">Ownership Timeline</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-[#00C853] rounded-full flex items-center justify-center text-white text-sm">
-                        ✓
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">Application Approved</p>
-                        <p className="text-xs text-gray-500">January 15, 2026</p>
-                      </div>
-                    </div>
-                    <div className="ml-4 border-l-2 border-gray-200 h-4"></div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-[#00C853] rounded-full flex items-center justify-center text-white text-sm">
-                        ✓
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">First Payment Received</p>
-                        <p className="text-xs text-gray-500">January 15, 2026</p>
-                      </div>
-                    </div>
-                    <div className="ml-4 border-l-2 border-[#00C853] h-4"></div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-[#00C853] rounded-full flex items-center justify-center text-white text-sm">
-                        35%
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">Current Progress</p>
-                        <p className="text-xs text-gray-500">On track for {userData.estimatedOwnershipDate}</p>
-                      </div>
-                    </div>
-                    <div className="ml-4 border-l-2 border-dashed border-gray-300 h-4"></div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-sm">
-                        🎉
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-600">Full Ownership</p>
-                        <p className="text-xs text-gray-500">{userData.estimatedOwnershipDate}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions & Recent Activity */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full bg-[#00C853] hover:bg-[#00b84a]">
-                  Make Payment
-                </Button>
-                <Link to="/documents" className="block">
-                  <Button variant="outline" className="w-full">
-                    <FileText className="w-4 h-4 mr-2" />
-                    View Documents
-                  </Button>
-                </Link>
-                <Button variant="outline" className="w-full">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Service
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Recent Payments */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Payments</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {recentPayments.map((payment, index) => (
-                    <div key={index} className="flex justify-between items-center pb-3 border-b last:border-b-0">
-                      <div>
-                        <p className="font-medium">R {payment.amount.toLocaleString()}</p>
-                        <p className="text-xs text-gray-500">{payment.date}</p>
-                      </div>
-                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                        {payment.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <Button variant="link" className="w-full mt-3 text-[#00C853]">
-                  View All Payments
-                </Button>
-              </CardContent>
-            </Card>
+      <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+        <div className="flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <h1 className="text-3xl font-bold">Hi {user?.fullName.split(" ")[0]}</h1>
+            <p className="text-gray-600">{isOwner ? "Manage your vehicles and rental requests." : "Track your rental requests and weekly payments."}</p>
           </div>
+          {isOwner
+            ? <Link to="/vehicles/new"><Button className="bg-[#00C853] hover:bg-[#00b84a]">List a vehicle</Button></Link>
+            : <Link to="/vehicles"><Button className="bg-[#00C853] hover:bg-[#00b84a]">Find a vehicle</Button></Link>}
         </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {isOwner ? (<>
+            <Stat label="Vehicles listed" value={vehicles.length} />
+            <Stat label="Pending requests" value={pending} />
+            <Stat label="Active rentals" value={active} />
+            <Stat label="Weekly income (active)" value={money(rentals.filter((r) => r.status === "active").reduce((s, r) => s + r.weeklyRate, 0))} />
+          </>) : (<>
+            <Stat label="Pending requests" value={pending} />
+            <Stat label="Active rental" value={active ? "Yes" : "No"} />
+            <Stat label="Required documents" value={`${docCount} / 3`} />
+            <Stat label="Total requests" value={rentals.length} />
+          </>)}
+        </div>
+
+        {!isOwner && docCount < 3 && (
+          <Card className="border-amber-300 bg-amber-50">
+            <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
+              <span className="text-sm">Upload your ID, driver's licence and PrDP to start requesting vehicles.</span>
+              <Link to="/documents"><Button size="sm" className="bg-[#00C853] hover:bg-[#00b84a]">Upload documents</Button></Link>
+            </CardContent>
+          </Card>
+        )}
+
+        {isOwner && (
+          <div className="flex gap-2 border-b">
+            {(["rentals", "vehicles"] as const).map((t) => (
+              <button key={t} onClick={() => setTab(t)}
+                className={`px-4 py-2 -mb-px border-b-2 capitalize ${tab === t ? "border-[#00C853] text-[#00873a] font-medium" : "border-transparent text-gray-600"}`}>
+                {t === "rentals" ? `Requests & rentals${pending ? ` (${pending})` : ""}` : "My vehicles"}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {(!isOwner || tab === "rentals") && (
+          <section className="space-y-3">
+            {!isOwner && <h2 className="text-xl font-semibold">My rentals</h2>}
+            <RentalList rentals={rentals} isOwner={isOwner} reload={load} />
+          </section>
+        )}
+
+        {isOwner && tab === "vehicles" && (
+          <section className="space-y-4">
+            {vehicles.length === 0 && <p className="text-gray-500">You haven't listed a vehicle yet.</p>}
+            {vehicles.map((v) => (
+              <Card key={v.id}>
+                <CardContent className="p-5 flex flex-wrap gap-4 items-center">
+                  <VehicleImage src={v.imageUrl} className="w-24 h-20 rounded-lg" />
+                  <div className="flex-1 min-w-[200px]">
+                    <div className="flex items-center gap-2"><span className="font-semibold">{v.year} {v.make} {v.model}</span><StatusBadge status={v.status} /></div>
+                    <p className="text-sm text-gray-600">{v.plate} · {money(v.weeklyRate)}/wk · deposit {money(v.deposit)}</p>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <Link to={`/vehicles/${v.id}/edit`}><Button size="sm" variant="outline">Edit</Button></Link>
+                    {v.status !== "rented" && <Button size="sm" variant="outline" onClick={() => toggleHidden(v)}>{v.status === "hidden" ? "Show listing" : "Hide listing"}</Button>}
+                    <Button size="sm" variant="ghost" className="text-red-600" onClick={() => remove(v)}>Delete</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </section>
+        )}
       </div>
     </div>
   );
