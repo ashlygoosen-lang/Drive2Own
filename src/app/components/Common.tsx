@@ -1,6 +1,7 @@
 import { Link, Navigate } from "react-router";
 import type { ReactNode } from "react";
-import { Fuel, Settings2, Users } from "lucide-react";
+import { Fuel, Heart, Settings2, Users } from "lucide-react";
+import { useFavorites } from "../../lib/favorites";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { assetUrl, money, platformLabel, type Role, type Vehicle } from "../../lib/api";
@@ -66,12 +67,42 @@ export function VehicleImage({ src, className = "", color }: { src: string | nul
   );
 }
 
-export function VehicleCard({ v }: { v: Vehicle }) {
+export function SaveButton({ id, className = "" }: { id: number; className?: string }) {
+  const { has, toggle } = useFavorites();
+  const saved = has(id);
+  return (
+    <button
+      type="button"
+      aria-pressed={saved}
+      aria-label={saved ? "Remove from saved cars" : "Save this car"}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(id); }}
+      className={`w-9 h-9 rounded-full bg-white/95 shadow flex items-center justify-center hover:scale-105 transition-transform ${className}`}
+    >
+      <Heart className={`w-5 h-5 ${saved ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
+    </button>
+  );
+}
+
+export function VehicleCardSkeleton() {
+  return (
+    <Card className="overflow-hidden animate-pulse" aria-hidden>
+      <div className="h-44 bg-gray-200" />
+      <div className="p-4 space-y-3">
+        <div className="h-4 bg-gray-200 rounded w-2/3" />
+        <div className="h-3 bg-gray-200 rounded w-1/3" />
+        <div className="h-3 bg-gray-200 rounded w-1/2" />
+      </div>
+    </Card>
+  );
+}
+
+export function VehicleCard({ v, row = false }: { v: Vehicle; row?: boolean }) {
   return (
     <Link to={`/vehicles/${v.id}`}>
-      <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full">
-        <VehicleImage src={v.imageUrl} color={v.color} className="w-full h-44" />
-        <div className="p-4 space-y-3">
+      <Card className={`overflow-hidden hover:shadow-lg transition-shadow h-full relative ${row ? "sm:flex" : ""}`}>
+        <SaveButton id={v.id} className="absolute top-3 right-3 z-10" />
+        <VehicleImage src={v.imageUrl} color={v.color} className={row ? "w-full sm:w-64 h-44 shrink-0" : "w-full h-44"} />
+        <div className="p-4 space-y-3 flex-1">
           <div className="flex justify-between items-start gap-2">
             <div>
               <h3 className="font-semibold">{v.year} {v.make} {v.model}</h3>

@@ -6,6 +6,9 @@ import { VehicleCard } from "../components/Common";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 import { BadgeCheck, CalendarCheck, ChevronRight, FileSignature, KeyRound, Lock, ReceiptText, ShieldCheck } from "lucide-react";
 import { api, money, PLATFORMS, type Vehicle } from "../../lib/api";
+import { DriverCalculator, OwnerCalculator } from "../components/Calculator";
+import { Reveal } from "../components/Reveal";
+import { useTitle } from "../../lib/useTitle";
 
 const DRIVER_STEPS = [
   { title: "Create your account", text: "Sign up and upload your ID, driver's licence and PrDP once. We review them so owners can trust who they're renting to." },
@@ -33,6 +36,8 @@ export function Landing() {
   const [vehicles, setVehicles] = useState<Vehicle[] | null>(null);
   const [online, setOnline] = useState(false);
   const [tab, setTab] = useState<"drivers" | "owners">("drivers");
+  const [calc, setCalc] = useState<"drivers" | "owners">("drivers");
+  useTitle();
 
   useEffect(() => {
     api<{ vehicles: Vehicle[] }>("/vehicles?limit=100").then((r) => setVehicles(r.vehicles)).catch(() => setVehicles([]));
@@ -111,7 +116,7 @@ export function Landing() {
 
       {/* How it works */}
       <section id="how-it-works" className="py-16 md:py-20 scroll-mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
             <h2 className="font-display text-3xl md:text-4xl font-bold max-w-xl">From sign-up to the driver's seat in four steps</h2>
             <div role="tablist" className="inline-flex rounded-lg border p-1 bg-gray-50">
@@ -132,6 +137,29 @@ export function Landing() {
               </li>
             ))}
           </ol>
+        </Reveal>
+      </section>
+
+      {/* Calculators */}
+      <section id="calculator" className="py-16 md:py-20 bg-white scroll-mt-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+              <div>
+                <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">Run the numbers first</h2>
+                <p className="text-gray-600 max-w-xl">Work out what a rental could mean for you. Change any figure to match your own situation.</p>
+              </div>
+              <div role="tablist" className="inline-flex rounded-lg border p-1 bg-gray-50">
+                {(["drivers", "owners"] as const).map((t) => (
+                  <button key={t} role="tab" aria-selected={calc === t} onClick={() => setCalc(t)}
+                    className={`px-5 py-2 rounded-md text-sm font-medium ${calc === t ? "bg-[#0e3b2e] text-white" : "text-gray-700"}`}>
+                    {t === "drivers" ? "Driver earnings" : "Owner income"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-2xl border p-6 md:p-8">{calc === "drivers" ? <DriverCalculator /> : <OwnerCalculator />}</div>
+          </Reveal>
         </div>
       </section>
 

@@ -1,6 +1,8 @@
 import { createBrowserRouter, Outlet } from "react-router";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { Terms, Privacy } from "./pages/Legal";
+import { Saved } from "./pages/Saved";
+import { NotFound } from "./pages/NotFound";
 import { Landing } from "./pages/Landing";
 import { Join } from "./pages/Join";
 import { Login } from "./pages/Login";
@@ -33,5 +35,6 @@ export const router = createBrowserRouter([{ path: "/", Component: Root, childre
   { path: "admin", element: <RequireAuth><Admin /></RequireAuth> },
   { path: "terms", Component: Terms },
   { path: "privacy", Component: Privacy },
-  { path: "*", Component: Landing },
+  { path: "saved", Component: Saved },
+  { path: "*", Component: NotFound },
 ]}]);

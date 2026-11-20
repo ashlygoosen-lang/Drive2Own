@@ -1,0 +1,10 @@
+{
+  "name": "Drive2Own",
+  "short_name": "Drive2Own",
+  "description": "Rent a car for Uber, inDrive or Bolt in South Africa.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0e3b2e",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

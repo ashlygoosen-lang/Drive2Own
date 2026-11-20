@@ -7,7 +7,10 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { PlatformBadges, StatusBadge, VehicleImage } from "../components/Common";
+import { PlatformBadges, SaveButton, StatusBadge, VehicleCard, VehicleImage } from "../components/Common";
+import { DriverCalculator } from "../components/Calculator";
+import { useTitle } from "../../lib/useTitle";
+import { Link2, ShieldCheck } from "lucide-react";
 import { Field, selectClass } from "../components/Fields";
 import { api, money, platformLabel, type Vehicle } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
@@ -21,12 +24,29 @@ export function VehicleDetail() {
   const [busy, setBusy] = useState(false);
   const tomorrow = new Date(Date.now() + 864e5).toISOString().slice(0, 10);
   const [form, setForm] = useState({ platform: "", startDate: tomorrow, weeks: 4, message: "" });
+  const [related, setRelated] = useState<Vehicle[]>([]);
+  useTitle(v ? `${v.year} ${v.make} ${v.model} for rent in ${v.city}` : undefined);
 
   useEffect(() => {
     api<{ vehicle: Vehicle }>(`/vehicles/${id}`)
       .then((r) => { setV(r.vehicle); setForm((f) => ({ ...f, platform: r.vehicle.platforms[0] ?? "" })); })
       .catch((e) => setError(e.message));
   }, [id]);
+
+  useEffect(() => {
+    if (!v) return;
+    api<{ vehicles: Vehicle[] }>(`/vehicles?limit=5&platform=${v.platforms[0]}`)
+      .then((r) => setRelated(r.vehicles.filter((x) => x.id !== v.id).slice(0, 3)))
+      .catch(() => {});
+  }, [v?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const share = async () => {
+    const url = window.location.href;
+    try {
+      if (navigator.share) await navigator.share({ title: document.title, url });
+      else { await navigator.clipboard.writeText(url); toast.success("Link copied"); }
+    } catch { /* cancelled */ }
+  };
 
   if (error) return <div className="min-h-screen"><Header /><p className="p-12 text-center text-gray-600">{error}</p></div>;
   if (!v) return <div className="min-h-screen"><Header /><p className="p-12 text-center text-gray-500">Loading…</p></div>;
@@ -53,7 +73,13 @@ export function VehicleDetail() {
       <Header />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <VehicleImage src={v.imageUrl} color={v.color} className="w-full h-72 md:h-96 rounded-xl" />
+          <div className="relative">
+            <VehicleImage src={v.imageUrl} color={v.color} className="w-full h-72 md:h-96 rounded-xl" />
+            <div className="absolute top-4 right-4 flex gap-2">
+              <button onClick={share} aria-label="Share this car" className="w-9 h-9 rounded-full bg-white/95 shadow flex items-center justify-center"><Link2 className="w-5 h-5 text-gray-600" /></button>
+              <SaveButton id={v.id} />
+            </div>
+          </div>
           <div>
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-3xl font-bold">{v.year} {v.make} {v.model}</h1>
@@ -71,6 +97,29 @@ export function VehicleDetail() {
           </Card>
           {v.description && (
             <div><h2 className="font-semibold mb-2">About this vehicle</h2><p className="text-gray-700 whitespace-pre-line">{v.description}</p></div>
+          )}
+          <Card>
+            <CardContent className="p-6 space-y-3">
+              <h2 className="font-semibold flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-[#00873a]" />What you'll need to rent this car</h2>
+              <ul className="text-sm text-gray-700 grid sm:grid-cols-2 gap-x-6 gap-y-1 list-disc pl-5">
+                <li>SA ID or passport</li><li>Valid driver's licence</li><li>Professional Driving Permit (PrDP)</li>
+                <li>An approved {v.platforms.map(platformLabel).join(" / ")} driver account</li>
+              </ul>
+              <p className="text-xs text-gray-500">The owner reviews your request and documents, then you both accept a written rental agreement before handover.</p>
+            </CardContent>
+          </Card>
+          {user?.role !== "owner" && (
+            <div>
+              <h2 className="font-semibold mb-1">Estimate your weekly earnings</h2>
+              <p className="text-sm text-gray-600 mb-4">Try your own numbers to see whether this car's rent works for you.</p>
+              <Card><CardContent className="p-6"><DriverCalculator weeklyRent={v.weeklyRate} /></CardContent></Card>
+            </div>
+          )}
+          {related.length > 0 && (
+            <div>
+              <h2 className="font-semibold mb-4">Similar cars</h2>
+              <div className="grid sm:grid-cols-3 gap-4">{related.map((r) => <VehicleCard key={r.id} v={r} />)}</div>
+            </div>
           )}
         </div>
 

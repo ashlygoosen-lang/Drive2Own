@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router";
-import { Car, Menu, X } from "lucide-react";
+import { Car, Heart, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { useAuth } from "../../lib/auth";
@@ -18,6 +18,7 @@ export function Header() {
   const items = (
     <>
       <NavLink to="/vehicles" className={link} onClick={close}>Find a Vehicle</NavLink>
+      <NavLink to="/saved" className={link} onClick={close}><span className="inline-flex items-center gap-1"><Heart className="w-4 h-4" />Saved</span></NavLink>
       {user ? (
         <>
           <NavLink to="/dashboard" className={link} onClick={close}>Dashboard</NavLink>

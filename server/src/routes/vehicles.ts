@@ -50,6 +50,9 @@ vehiclesRouter.get('/', (req, res) => {
   const q = z.object({
     platform: z.enum(PLATFORMS).optional(),
     city: z.string().trim().optional(),
+    transmission: z.enum(['manual', 'automatic']).optional(),
+    fuel: z.enum(['petrol', 'diesel', 'hybrid', 'electric']).optional(),
+    minSeats: z.coerce.number().int().min(2).max(9).optional(),
     q: z.string().trim().optional(),
     minRate: z.coerce.number().optional(),
     maxRate: z.coerce.number().optional(),
@@ -61,6 +64,9 @@ vehiclesRouter.get('/', (req, res) => {
   const args: (string | number)[] = [];
   if (q.platform) { where.push(`v.platforms LIKE ?`); args.push(`%"${q.platform}"%`); }
   if (q.city) { where.push(`LOWER(v.city) = LOWER(?)`); args.push(q.city); }
+  if (q.transmission) { where.push(`v.transmission = ?`); args.push(q.transmission); }
+  if (q.fuel) { where.push(`v.fuel = ?`); args.push(q.fuel); }
+  if (q.minSeats) { where.push(`v.seats >= ?`); args.push(q.minSeats); }
   if (q.q) { where.push(`(v.make LIKE ? OR v.model LIKE ?)`); args.push(`%${q.q}%`, `%${q.q}%`); }
   if (q.minRate !== undefined) { where.push(`v.weekly_rate >= ?`); args.push(q.minRate); }
   if (q.maxRate !== undefined) { where.push(`v.weekly_rate <= ?`); args.push(q.maxRate); }

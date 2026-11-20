@@ -88,6 +88,10 @@ When an owner approves a request, a rental agreement is generated and frozen for
 
 The landing page, FAQ, footer, and Terms / Privacy pages are written for visitors. Set `VITE_CONTACT_EMAIL` at build time to show a contact address in the footer (none is shown by default). The Terms and Privacy pages are drafts written to reflect how the app works: **have a South African attorney review them (including POPIA obligations) before launch.** Vehicle cards show a colour-matched illustration until the owner uploads a photo.
 
+## Site features for visitors
+
+Car search with filters (platform, transmission, fuel, seats, max rate, sort, grid/list view) stored in the URL so searches can be shared; saved cars (kept in the browser); driver-earnings and owner-income calculators (all figures editable, defaults are examples only); similar-cars and what-you-need panels on each car; share button; a 404 page; per-page browser titles, Open Graph tags, `robots.txt`, favicon and a web app manifest so the site can be added to a phone's home screen.
+
 ## Still not covered
 
 - Payout of online payments to owners, commissions and refunds.
