@@ -35,7 +35,8 @@ export function Footer() {
         </nav>
       </div>
       <div className="border-t border-white/10 py-5 px-4 text-center text-xs text-green-100/70">
-        © {new Date().getFullYear()} Drive2Own. Drive2Own is an independent marketplace and is not affiliated with, endorsed by or sponsored by Uber, inDrive or Bolt.
+        <p>© {new Date().getFullYear()} Drive2Own. Drive2Own is a division of VINK Group (Pty) Ltd, registration number 2018/079316/07.</p>
+        <p className="mt-1">Drive2Own is an independent marketplace and is not affiliated with, endorsed by or sponsored by Uber, inDrive or Bolt.</p>
       </div>
     </footer>
   );
