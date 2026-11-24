@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
-import { CalendarClock, CarFront, ClipboardList, FileCheck2, Inbox, KeyRound, Plus, Search, Wallet } from "lucide-react";
+import { ShieldAlert, CalendarClock, CarFront, ClipboardList, FileCheck2, Inbox, KeyRound, Plus, Search, Wallet } from "lucide-react";
 import { EmptyState, PageHero, PageShell, StatCard } from "../components/Layout";
 import { useTitle } from "../../lib/useTitle";
 import { Button } from "../components/ui/button";
@@ -238,6 +238,16 @@ export function Dashboard() {
             <StatCard icon={CalendarClock} label="Total requests" value={rentals.length} />
           </>)}
         </div>
+
+        {user && !user.profileComplete && (
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-white p-5">
+            <div className="flex items-start gap-3">
+              <span className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0"><ShieldAlert className="w-5 h-5" /></span>
+              <div><div className="font-semibold">Complete your verification profile</div><div className="text-sm text-gray-600">We now need your ID number, address, income details and FICA declarations from every member.</div></div>
+            </div>
+            <Link to="/complete-profile"><Button className="btn-premium">Complete profile</Button></Link>
+          </div>
+        )}
 
         {!isOwner && docCount < 3 && (
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-white p-5">

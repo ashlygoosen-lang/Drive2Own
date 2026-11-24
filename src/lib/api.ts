@@ -54,7 +54,7 @@ export const platformLabel = (p: string) => PLATFORMS.find((x) => x.id === p)?.l
 
 export interface User {
   id: number; role: Role; fullName: string; phone: string; email: string | null;
-  city: string; platforms: Platform[]; createdAt: string; isAdmin: boolean;
+  city: string; platforms: Platform[]; createdAt: string; isAdmin: boolean; profileComplete: boolean;
 }
 export interface Vehicle {
   id: number; ownerId: number; ownerName?: string; make: string; model: string; year: number; plate?: string;
@@ -80,7 +80,7 @@ export interface Doc {
   status: 'uploaded' | 'verified' | 'rejected'; note: string | null;
 }
 export interface AppNotification { id: number; title: string; body: string; link: string | null; read: boolean; createdAt: string }
-export interface DocType { type: string; label: string; required: boolean }
+export interface DocType { type: string; label: string; required: boolean; hint?: string }
 
 /** Starts a PayFast payment: fetches the signed form and submits it in the browser. */
 export async function payOnline(paymentId: number) {

@@ -78,6 +78,7 @@ export function Documents() {
                   {t.required && <span className="text-red-500">*</span>}
                   {d && <StatusBadge status={d.status === "uploaded" ? "pending" : d.status === "verified" ? "paid" : "declined"} label={d.status === "uploaded" ? "awaiting review" : d.status} />}
                 </CardTitle>
+                {t.hint && <CardDescription>{t.hint}</CardDescription>}
                 {d && <CardDescription>{d.name} · uploaded {fmtDate(d.uploadedAt)}</CardDescription>}
                 {d?.status === "rejected" && d.note && <p className="text-sm text-red-600">Rejected: {d.note}. Please upload a corrected copy.</p>}
               </CardHeader>

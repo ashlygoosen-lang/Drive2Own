@@ -108,6 +108,43 @@ addColumn('payments', 'paid_via', 'TEXT');
 addColumn('payments', 'provider_ref', 'TEXT');
 
 db.exec(`
+CREATE TABLE IF NOT EXISTS user_profiles (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  id_type TEXT NOT NULL,
+  id_number TEXT NOT NULL,
+  date_of_birth TEXT NOT NULL,
+  nationality TEXT NOT NULL,
+  work_permit_number TEXT,
+  address_line1 TEXT NOT NULL,
+  address_line2 TEXT,
+  suburb TEXT NOT NULL,
+  city TEXT NOT NULL,
+  province TEXT NOT NULL,
+  postal_code TEXT NOT NULL,
+  employment_status TEXT NOT NULL,
+  income_source TEXT NOT NULL,
+  income_source_other TEXT,
+  monthly_income_band TEXT NOT NULL,
+  years_driving INTEGER,
+  company_name TEXT,
+  company_reg_number TEXT,
+  tax_number TEXT,
+  source_of_funds TEXT NOT NULL,
+  is_pep INTEGER NOT NULL DEFAULT 0,
+  pep_details TEXT,
+  acting_on_own_behalf INTEGER NOT NULL DEFAULT 1,
+  consent_verification INTEGER NOT NULL DEFAULT 0,
+  consent_popia INTEGER NOT NULL DEFAULT 0,
+  consent_marketing INTEGER NOT NULL DEFAULT 0,
+  declaration_true INTEGER NOT NULL DEFAULT 0,
+  legal_version TEXT NOT NULL,
+  accepted_at TEXT NOT NULL DEFAULT (datetime('now')),
+  accepted_ip TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_profiles_id_number ON user_profiles(id_type, id_number);
+`);
+
+db.exec(`
 CREATE TABLE IF NOT EXISTS notifications (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

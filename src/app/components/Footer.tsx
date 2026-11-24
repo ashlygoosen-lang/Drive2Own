@@ -9,7 +9,7 @@ const COLUMNS: { title: string; links: [string, string][] }[] = [
   { title: "For drivers", links: [["Find a car to rent", "/vehicles"], ["Uber cars", "/vehicles?platform=uber"], ["Bolt cars", "/vehicles?platform=bolt"], ["inDrive cars", "/vehicles?platform=indrive"], ["Sign up as a driver", "/join?role=driver"]] },
   { title: "For owners", links: [["List your car", "/join?role=owner"], ["How it works", "/#how-it-works"], ["Income calculator", "/#calculator"], ["Owner login", "/login"]] },
   { title: "Drive to Own", links: [["How the programme works", "/drive-to-own#how"], ["How we protect you", "/drive-to-own#protection"], ["Register your interest", "/drive-to-own"], ["Questions", "/drive-to-own"]] },
-  { title: "Help", links: [["FAQ", "/#faq"], ["Saved cars", "/saved"], ["Terms of use", "/terms"], ["Privacy policy (POPIA)", "/privacy"]] },
+  { title: "Help", links: [["FAQ", "/#faq"], ["Saved cars", "/saved"], ["Terms of use", "/terms"], ["Privacy policy (POPIA)", "/privacy"], ["Refund policy", "/refunds"]] },
 ];
 
 const TRUST: [typeof BadgeCheck, string][] = [
@@ -86,6 +86,7 @@ export function Footer({ cta = true }: { cta?: boolean }) {
             <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2">
               <Link to="/terms" className="hover:text-white transition-colors">Terms of use</Link>
               <Link to="/privacy" className="hover:text-white transition-colors">Privacy &amp; POPIA</Link>
+              <Link to="/refunds" className="hover:text-white transition-colors">Refunds &amp; cancellations</Link>
               <Link to="/#faq" className="hover:text-white transition-colors">FAQ</Link>
             </nav>
           </div>

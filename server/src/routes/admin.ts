@@ -36,6 +36,13 @@ adminRouter.get('/documents', (req, res) => {
   });
 });
 
+adminRouter.get('/users/:id/profile', (req, res) => {
+  const u = db.prepare('SELECT id, role, full_name, phone, email, created_at FROM users WHERE id = ?').get(Number(req.params.id));
+  if (!u) throw new HttpError(404, 'User not found');
+  const p = db.prepare('SELECT * FROM user_profiles WHERE user_id = ?').get(Number(req.params.id));
+  res.json({ user: u, profile: p ?? null });
+});
+
 adminRouter.post('/documents/:id/review', (req, res) => {
   const b = z.object({ status: z.enum(['verified', 'rejected']), note: z.string().trim().max(300).optional() }).parse(req.body);
   if (b.status === 'rejected' && !b.note) throw new HttpError(400, 'Add a short reason so the user can fix it');

@@ -24,16 +24,47 @@ const OWNER_STEPS = [
   { title: "Confirm insurance and sign", text: "Confirm the car is insured for e-hailing, accept the agreement, and hand over the keys once both sides have signed." },
   { title: "Track your income", text: "A weekly payment schedule is created for you. Mark payments received, or let the driver pay online." },
 ];
-const FAQ = [
-  ["What do I need to rent a car as a driver?", "A valid South African ID or passport, a driver's licence and a Professional Driving Permit (PrDP). You'll also need an approved driver account on Uber, inDrive or Bolt. Each platform has its own driver and vehicle requirements, so check their current rules before you request a car."],
-  ["How much does it cost?", "Each owner sets their own weekly rate and refundable deposit, shown on every listing before you send a request. The total for your rental period is calculated for you on the car's page."],
-  ["Who pays for insurance, repairs and fines?", "The owner confirms the car is insured for e-hailing use and pays for scheduled servicing and wear-and-tear repairs. The driver pays for fuel, traffic fines, tolls and damage caused by negligence. These terms are written into the rental agreement both sides accept before handover."],
-  ["Can I end up owning the car?", "Not through a normal rental: a car you rent on the marketplace stays the owner's. If ownership is your goal, our Drive to Own programme is built for it. You join a verified driver group, we buy the car, and part of each payment counts toward owning it."],
-  ["Can I drive for more than one platform?", "Yes, if the owner has approved the car for them. When you send a request, you choose the platform you will drive on."],
-  ["How do payments work?", "Once the car is handed over, a payment schedule is created: the deposit up front, then rent every week. Owners confirm each payment they receive, and drivers can pay online where it is enabled."],
-  ["Is Drive2Own part of Uber, inDrive or Bolt?", "No. Drive2Own is independent and is not affiliated with, endorsed by or sponsored by Uber, Bolt or inDrive. On the marketplace, the rental agreement is between the owner and the driver."],
-  ["Who can see my documents?", "Only you, Drive2Own's review team, and an owner you have sent a request to. Documents are stored privately and are never shown publicly. See our privacy policy for details."],
+const FAQ_GROUPS: { id: string; label: string; items: [string, string][] }[] = [
+  { id: "drivers", label: "For drivers", items: [
+    ["What do I need to rent a car?", "You must be at least 21 and hold a valid South African ID or passport (with a valid work permit if you are not a South African citizen or permanent resident), a valid driver's licence and a Professional Driving Permit (PrDP). You also need an active driver account on Uber, Bolt or inDrive. At sign-up you upload your ID, licence, PrDP, proof of residence, 3 months of bank or earnings statements and a screenshot of your driver profile."],
+    ["How long does verification take?", "Our team reviews documents as they arrive, usually within 1 to 2 business days. You'll get a notification when each document is verified, or a clear reason if it needs replacing. You can browse cars and save favourites while you wait."],
+    ["How do I rent a car?", "Find a car approved for your platform, choose a start date and rental length, and send the owner a request. If the owner approves, you both read and accept a written rental agreement. You pay the deposit, collect the car and pay rent weekly. Every payment is recorded on your dashboard."],
+    ["Can I drive for more than one platform?", "Yes, if the owner has approved the car for each platform. You choose the platform you'll drive on when you send a request, and the rental agreement records which platforms are allowed."],
+    ["Who pays for fuel, fines and tolls?", "The driver pays for fuel, traffic fines, AARTO penalties, tolls and e-tolls incurred during the rental, and must nominate themselves as the driver if a fine is issued in the owner's name. The owner pays for scheduled servicing and wear-and-tear repairs. The rental agreement sets this out in writing before handover."],
+    ["What happens if I have an accident or the car is stolen?", "Make sure everyone is safe, report it to the police where required, and tell the owner within 24 hours. The owner's e-hailing insurance applies according to its terms. You may be liable for the excess or for damage caused by negligence, as set out in your rental agreement."],
+    ["Can someone else drive the car?", "No. Only the verified driver named in the rental agreement may drive the car. Letting someone else drive, or sub-letting the car, is a serious breach of the agreement and of our terms."],
+    ["Can I own the car I rent?", "Not through a marketplace rental: those cars belong to their owners. If owning a car is your goal, our Drive to Own programme is built for it. You join a verified driver group, Drive2Own buys the car, and part of each payment counts toward ownership."],
+  ] },
+  { id: "owners", label: "For owners", items: [
+    ["What does it cost to list my car?", "Listing is currently free. You set your own weekly rate and refundable deposit. If we ever introduce a fee, we'll tell you the amount before you pay anything."],
+    ["What do I need to list a car?", "Your ID or passport (or company registration), proof of residence, a bank confirmation letter for rent payments, the vehicle's registration certificate and an insurance schedule showing comprehensive cover that includes e-hailing use."],
+    ["How do I choose a driver?", "You see each driver's request, their chosen platform and their verified documents before you decide. You approve or decline every request yourself, and the car is only handed over once you've both accepted the rental agreement."],
+    ["Does my insurance need to cover e-hailing?", "Yes. Most standard private policies exclude e-hailing. Before handover you confirm on the platform that the car is comprehensively insured for e-hailing use. You're also responsible for any operating licence required for the car."],
+    ["How do I get paid?", "A weekly payment schedule is created when you hand over the car. Drivers pay you directly or online through the platform where enabled. You confirm payments you receive directly, and online payments are recorded automatically."],
+    ["What if a driver damages the car or stops paying?", "Your rental agreement covers late payment, damage, fines and early termination. You may deduct amounts the driver is liable for from the deposit, with an itemised statement and evidence. Our complaints process can help where you and the driver disagree."],
+  ] },
+  { id: "payments", label: "Payments & deposits", items: [
+    ["How are payments made?", "The deposit is paid at handover and rent is paid weekly in advance, either directly to the owner or online through PayFast where enabled. All amounts are in rand and every payment is recorded on the platform."],
+    ["When do I get my deposit back?", "Within 7 business days of returning the car, less any lawful deductions such as unpaid rent, fines incurred during the rental or damage beyond fair wear and tear. Every deduction must come with an itemised statement and evidence. See our refund and cancellation policy for details."],
+    ["Can I cancel a request?", "Yes, free of charge, at any time before the car is handed over. Anything you've paid is refunded in full within 7 business days."],
+    ["Can I end a rental early?", "Yes, by giving the notice in your rental agreement and returning the car. Rent for the current week isn't refundable, but rent you've paid for later full weeks is refunded within 7 business days, less any reasonable cancellation penalty the law allows."],
+    ["What if the car breaks down?", "If the car can't be used for more than 48 hours through no fault of yours, and no replacement is provided, you're entitled to a pro rata refund or credit of rent for each full day."],
+  ] },
+  { id: "verification", label: "Verification & privacy", items: [
+    ["Why do you ask for my ID number, income and source of funds?", "To verify every member, assess affordability, and apply anti-money-laundering standards consistent with the Financial Intelligence Centre Act (FICA). This protects owners, drivers and Drive2Own from fraud. Your information is kept confidential and handled under POPIA."],
+    ["Who can see my documents?", "Only you, Drive2Own's review team and an owner you've sent a rental request to. Documents are stored privately and are never public. Phone numbers are shared between owner and driver only after a request is approved."],
+    ["Do you run credit checks?", "With your consent, we may verify your identity and run credit-bureau and fraud-prevention checks, in line with the National Credit Act. A thin or imperfect credit record doesn't automatically rule you out."],
+    ["What is a “prominent public official” and why do you ask?", "FICA guidance requires extra care where someone holds, or is closely linked to someone who holds, a senior public position, such as a member of Parliament, a judge or a head of a state-owned company. Answering yes doesn't stop you joining; it means we may ask a few more questions."],
+    ["How do I access, correct or delete my information?", "Email us and we'll respond within the times set by POPIA and PAIA. Some records must be kept for 5 years after your account closes to meet legal obligations. Full details are in our privacy policy."],
+  ] },
+  { id: "account", label: "Account & support", items: [
+    ["Is Drive2Own part of Uber, Bolt or inDrive?", "No. Drive2Own is independent and is not affiliated with, endorsed by or sponsored by any e-hailing platform. On the marketplace, the rental agreement is between the owner and the driver."],
+    ["I forgot my password. What now?", "Use “Forgot password?” on the sign-in page. We'll send a 6-digit code to your registered phone number, valid for 15 minutes."],
+    ["How do I make a complaint?", "Email our support team with your name, phone number and the details. We acknowledge complaints within 2 business days and aim to resolve them within 10 business days. If we can't resolve it, you can refer it to the relevant ombud."],
+    ["Can I close my account?", "Yes, once any active rental or agreement has been completed or properly ended. Contact us and we'll close it. We keep certain records afterwards where the law requires it."],
+  ] },
 ];
+
 
 /** Two-option segmented control with a sliding pill. */
 function Seg<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
@@ -56,6 +87,7 @@ export function Landing() {
   const [online, setOnline] = useState(false);
   const [tab, setTab] = useState<"drivers" | "owners">("drivers");
   const [calc, setCalc] = useState<"drivers" | "owners">("drivers");
+  const [faqTab, setFaqTab] = useState("drivers");
   useTitle();
 
   useEffect(() => {
@@ -269,17 +301,32 @@ export function Landing() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-16 bg-[#f1f6f3] scroll-mt-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <Reveal><Eyebrow className="mb-3">Questions</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-8">Frequently asked questions</h2></Reveal>
-          <Reveal variant="fade"><Accordion type="single" collapsible className="bg-white rounded-xl border px-5">
-            {FAQ.map(([q, a], i) => (
-              <AccordionItem key={q} value={`q${i}`}>
-                <AccordionTrigger className="text-left text-base font-semibold">{q}</AccordionTrigger>
-                <AccordionContent className="text-gray-600 leading-relaxed">{a}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion></Reveal>
+      <section id="faq" className="py-16 md:py-24 bg-[#f1f6f3] scroll-mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-[0.8fr_1.2fr] gap-10 lg:gap-16 items-start">
+          <Reveal className="lg:sticky lg:top-28 space-y-4">
+            <Eyebrow>Questions</Eyebrow>
+            <h2 className="h-reveal font-display text-3xl md:text-4xl font-bold">Frequently asked questions</h2>
+            <p className="text-gray-600">Straight answers about renting, listing, payments, deposits and how we protect your information.</p>
+            <div role="tablist" aria-label="FAQ topics" className="flex flex-wrap lg:flex-col gap-2 pt-2">
+              {FAQ_GROUPS.map((g) => (
+                <button key={g.id} role="tab" aria-selected={faqTab === g.id} onClick={() => setFaqTab(g.id)}
+                  className={`text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${faqTab === g.id ? "bg-[#0e3b2e] text-white shadow-[0_10px_24px_-16px_rgba(14,59,46,0.9)]" : "bg-white border border-[#e3ebe6] text-gray-700 hover:border-[#b9cdc1]"}`}>
+                  {g.label} <span className={faqTab === g.id ? "text-white/60" : "text-gray-400"}>· {g.items.length}</span>
+                </button>
+              ))}
+            </div>
+            <p className="text-sm text-gray-500 pt-2">Read the full <Link to="/terms" className="text-[#00873a] font-medium hover:underline">terms</Link>, <Link to="/privacy" className="text-[#00873a] font-medium hover:underline">privacy policy</Link> and <Link to="/refunds" className="text-[#00873a] font-medium hover:underline">refund policy</Link>.</p>
+          </Reveal>
+          <div key={faqTab} className="swap-in">
+            <Accordion type="single" collapsible defaultValue="q0" className="bg-white rounded-2xl border border-[#e3ebe6] px-5 sm:px-7 shadow-[0_24px_48px_-36px_rgba(14,59,46,0.35)]">
+              {FAQ_GROUPS.find((g) => g.id === faqTab)!.items.map(([q, a], i) => (
+                <AccordionItem key={q} value={`q${i}`}>
+                  <AccordionTrigger className="text-left text-base font-semibold py-5 hover:no-underline hover:text-[#00873a]">{q}</AccordionTrigger>
+                  <AccordionContent className="text-gray-600 leading-relaxed text-[15px]">{a}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </section>
 

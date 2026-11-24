@@ -7,3 +7,28 @@ body { font-family: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe U
 .font-display { font-family: 'Bricolage Grotesque', 'Figtree', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.02em; }
 :focus-visible { outline: 2px solid #ffc72c; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* ---------- Legal documents ---------- */
+.legal { color: #33433c; font-size: 15px; line-height: 1.75; }
+.legal .lead { font-size: 1.05rem; color: #10201a; padding-bottom: 1.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid #eef3f0; }
+.legal section { padding-top: 1.75rem; }
+.legal h2 { font-family: 'Bricolage Grotesque', 'Figtree', sans-serif; font-size: 1.25rem; font-weight: 700; color: #10201a; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+.legal p { margin: 0.6rem 0; }
+.legal ul { margin: 0.6rem 0 0.6rem 0.25rem; display: grid; gap: 0.45rem; }
+.legal ul li { padding-left: 1.1rem; position: relative; }
+.legal ul li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 5px; height: 5px; border-radius: 99px; background: #00873a; }
+.legal a { color: #00873a; font-weight: 600; }
+.legal a:hover { text-decoration: underline; }
+.legal strong { color: #10201a; }
+.legal .caps { font-weight: 600; color: #10201a; background: #fbf8ec; border-left: 3px solid #ffc72c; padding: 0.75rem 1rem; border-radius: 0 10px 10px 0; }
+.legal table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; display: block; overflow-x: auto; }
+.legal th { text-align: left; background: #f1f6f3; color: #10201a; font-weight: 600; padding: 0.6rem 0.8rem; white-space: nowrap; }
+.legal td { padding: 0.65rem 0.8rem; border-top: 1px solid #eef3f0; vertical-align: top; }
+.legal td:first-child { font-weight: 600; color: #10201a; min-width: 11rem; }
+.legal dl.info { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.75rem 1.5rem; margin: 1rem 0; padding: 1rem 1.25rem; border-radius: 14px; background: #f6f9f7; border: 1px solid #e3ebe6; font-size: 14px; }
+.legal dl.info dt { font-size: 12px; color: #6b7a73; }
+.legal dl.info dd { font-weight: 600; color: #10201a; word-break: break-word; }
+@media print {
+  header, footer, aside, .scroll-progress, #preload { display: none !important; }
+  .legal { border: 0 !important; padding: 0 !important; }
+}

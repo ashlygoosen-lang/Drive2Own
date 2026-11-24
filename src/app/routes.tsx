@@ -1,7 +1,8 @@
 import { createBrowserRouter, Outlet, useLocation } from "react-router";
 import { MotionRoot } from "./components/Motion";
 import { ScrollToHash } from "./components/ScrollToHash";
-import { Terms, Privacy } from "./pages/Legal";
+import { Terms, Privacy, Refunds } from "./pages/Legal";
+import { CompleteProfile } from "./pages/CompleteProfile";
 import { Saved } from "./pages/Saved";
 import { NotFound } from "./pages/NotFound";
 import { Landing } from "./pages/Landing";
@@ -46,6 +47,8 @@ export const router = createBrowserRouter([{ path: "/", Component: Root, childre
   { path: "admin", element: <RequireAuth><Admin /></RequireAuth> },
   { path: "terms", Component: Terms },
   { path: "privacy", Component: Privacy },
+  { path: "refunds", Component: Refunds },
+  { path: "complete-profile", element: <RequireAuth><CompleteProfile /></RequireAuth> },
   { path: "saved", Component: Saved },
   { path: "*", Component: NotFound },
 ]}]);
