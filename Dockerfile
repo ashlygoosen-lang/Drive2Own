@@ -19,9 +19,9 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/server/dist ./server/dist
 COPY --from=build /app/server/node_modules ./server/node_modules
 COPY --from=build /app/server/package.json ./server/package.json
-RUN mkdir -p /data && chown node:node /data
-USER node
-VOLUME /data
+# Persistent storage: on Railway, attach a Volume mounted at /data (Docker VOLUME is not supported there).
+# Runs as root so a Railway-mounted volume (root-owned) is writable.
+RUN mkdir -p /data
 EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s CMD node -e "fetch('http://localhost:'+process.env.PORT+'/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 WORKDIR /app/server
