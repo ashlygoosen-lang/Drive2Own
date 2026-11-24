@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { Input } from "./ui/input";
+import type { ReactNode } from "react";
 import { money } from "../../lib/api";
+import { AnimatedNumber } from "./Motion";
 
+const signed = (n: number) => `${n < 0 ? "− " : ""}${money(Math.abs(n))}`;
+const minus = (n: number) => `− ${money(n)}`;
 const num = (s: string) => (Number.isFinite(parseFloat(s)) ? Math.max(0, parseFloat(s)) : 0);
 
-function Row({ label, value, strong, tone }: { label: string; value: string; strong?: boolean; tone?: "good" | "bad" }) {
+function Row({ label, value, strong, tone }: { label: string; value: ReactNode; strong?: boolean; tone?: "good" | "bad" }) {
   return (
     <div className={`flex justify-between gap-4 ${strong ? "font-semibold text-base" : "text-sm text-gray-700"}`}>
       <span>{label}</span>
-      <span className={tone === "bad" ? "text-red-600" : tone === "good" ? "text-[#00873a]" : ""}>{value}</span>
+      <span className={`transition-colors duration-500 ${tone === "bad" ? "text-red-600" : tone === "good" ? "text-[#00873a]" : ""}`}>{value}</span>
     </div>
   );
 }
@@ -49,14 +53,14 @@ export function DriverCalculator({ weeklyRent }: { weeklyRent?: number }) {
         <Num label="Other costs per week" value={other} onChange={setOther} suffix="R" hint="Data, car wash, tolls, snacks." />
       </div>
       <div className="bg-[#f1f6f3] rounded-xl p-6 space-y-3 self-start">
-        <Row label="Fares" value={money(Math.round(earnings))} />
-        <Row label={`Platform fee (${num(fee)}%)`} value={`− ${money(Math.round(feeAmt))}`} />
-        <Row label="Car rent" value={`− ${money(Math.round(num(rent)))}`} />
-        <Row label="Fuel and other costs" value={`− ${money(Math.round(num(fuel) + num(other)))}`} />
-        <div className="border-t pt-3"><Row strong label="What you keep per week" value={`${net < 0 ? "− " : ""}${money(Math.round(Math.abs(net)))}`} tone={net < 0 ? "bad" : "good"} /></div>
+        <Row label="Fares" value={<AnimatedNumber value={Math.round(earnings)} format={money} />} />
+        <Row label={`Platform fee (${num(fee)}%)`} value={<AnimatedNumber value={Math.round(feeAmt)} format={minus} />} />
+        <Row label="Car rent" value={<AnimatedNumber value={Math.round(num(rent))} format={minus} />} />
+        <Row label="Fuel and other costs" value={<AnimatedNumber value={Math.round(num(fuel) + num(other))} format={minus} />} />
+        <div className="border-t pt-3"><Row strong label="What you keep per week" value={<AnimatedNumber value={Math.round(net)} format={signed} />} tone={net < 0 ? "bad" : "good"} /></div>
         <p className="text-sm text-gray-600">
           {Number.isFinite(breakEven)
-            ? <>You need about <strong>{money(Math.ceil(breakEven))}</strong> in weekly fares just to cover your costs.</>
+            ? <>You need about <strong><AnimatedNumber value={Math.ceil(breakEven)} format={money} /></strong> in weekly fares just to cover your costs.</>
             : "Enter a platform fee below 100% to see your break-even."}
         </p>
         <p className="text-xs text-gray-500">An estimate using the numbers you enter. Actual earnings depend on the hours you drive, demand and your platform's rules. Tax is not included.</p>
@@ -86,12 +90,12 @@ export function OwnerCalculator() {
         <Num label="Insurance per month" value={insurance} onChange={setInsurance} suffix="R" hint="Make sure your policy covers e-hailing use." />
       </div>
       <div className="bg-[#f1f6f3] rounded-xl p-6 space-y-3 self-start">
-        <Row label={`Rent (${w} weeks)`} value={money(Math.round(gross))} />
-        <Row label="Servicing and repairs" value={`− ${money(Math.round(num(service)))}`} />
-        <Row label="Insurance (12 months)" value={`− ${money(Math.round(num(insurance) * 12))}`} />
+        <Row label={`Rent (${w} weeks)`} value={<AnimatedNumber value={Math.round(gross)} format={money} />} />
+        <Row label="Servicing and repairs" value={<AnimatedNumber value={Math.round(num(service))} format={minus} />} />
+        <Row label="Insurance (12 months)" value={<AnimatedNumber value={Math.round(num(insurance) * 12)} format={minus} />} />
         <div className="border-t pt-3 space-y-2">
-          <Row strong label="Estimated per year" value={`${net < 0 ? "− " : ""}${money(Math.round(Math.abs(net)))}`} tone={net < 0 ? "bad" : "good"} />
-          <Row label="About per month" value={`${net < 0 ? "− " : ""}${money(Math.round(Math.abs(net) / 12))}`} />
+          <Row strong label="Estimated per year" value={<AnimatedNumber value={Math.round(net)} format={signed} />} tone={net < 0 ? "bad" : "good"} />
+          <Row label="About per month" value={<AnimatedNumber value={Math.round(net / 12)} format={signed} />} />
         </div>
         <p className="text-xs text-gray-500">An estimate from the numbers you enter. It excludes tax, fuel (paid by the driver), finance repayments and the cost of the car itself.</p>
       </div>

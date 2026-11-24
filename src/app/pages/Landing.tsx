@@ -9,7 +9,7 @@ import { api, money, PLATFORMS, type Vehicle } from "../../lib/api";
 import { DriverCalculator, OwnerCalculator } from "../components/Calculator";
 import { Reveal } from "../components/Reveal";
 import { Eyebrow } from "../components/Layout";
-import { CountUp, HeroAmbient, Magnetic, SplitWords } from "../components/Motion";
+import { CountUp, HeroAmbient, Magnetic, ScrollRoad, SplitWords, TiltStage } from "../components/Motion";
 import { useTitle } from "../../lib/useTitle";
 
 const DRIVER_STEPS = [
@@ -87,7 +87,7 @@ export function Landing() {
       <section className="hero-ambient bg-[#0e3b2e] text-white">
         <HeroAmbient />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-24 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center">
-          <div className="space-y-6">
+          <div className="scroll-out space-y-6">
             <div className="enter"><Eyebrow dark>E-hailing car rental · South Africa</Eyebrow></div>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05]">
               <SplitWords text="Rent a car this week." delay={80} />{" "}
@@ -106,7 +106,15 @@ export function Landing() {
             </div>
           </div>
 
-          <div className="enter-card bg-white text-[#10201a] rounded-2xl p-6 shadow-2xl shadow-black/30" style={{ ["--d" as string]: 550 }}>
+          <TiltStage className="scroll-out-slow lg:mx-6">
+          {/* Floating feature chips, layered at different depths (desktop only) */}
+          <div className="hero-chip hidden lg:block -left-12 -top-14" data-depth style={{ ["--dx" as string]: "18px" }}>
+            <span style={{ ["--d" as string]: 1250 }}><i><BadgeCheck className="w-4 h-4" /></i><span>Documents verified<small>ID · licence · PrDP</small></span></span>
+          </div>
+          <div className="hero-chip hidden lg:block -right-8 -bottom-16" data-depth style={{ ["--dx" as string]: "18px" }}>
+            <span style={{ ["--d" as string]: 1450 }}><i><FileSignature className="w-4 h-4" /></i><span>Agreement accepted<small>by owner and driver</small></span></span>
+          </div>
+          <div className="tilt-card enter-card relative bg-white text-[#10201a] rounded-2xl p-6 shadow-2xl shadow-black/30" style={{ ["--d" as string]: 550 }}>
             <h2 className="font-display text-xl font-bold">Cars available now</h2>
             <p className="text-sm text-gray-600 mb-4">Pick the platform you drive on.</p>
             <ul className="divide-y">
@@ -128,6 +136,7 @@ export function Landing() {
             </ul>
             <Link to="/join?role=owner" className="link-arrow block text-center text-sm font-medium text-[#00873a] pt-3 border-t">Own a car? List it and earn weekly <span className="arr">→</span></Link>
           </div>
+          </TiltStage>
         </div>
       </section>
 
@@ -164,9 +173,10 @@ export function Landing() {
       <section id="how-it-works" className="py-16 md:py-20 scroll-mt-16">
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
-            <div><Eyebrow className="mb-3">How it works</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold max-w-xl">From sign-up to the driver's seat in four steps</h2></div>
+            <div><Eyebrow className="mb-3">How it works</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold max-w-xl">From sign-up to the driver's seat in four steps</h2></div>
             <Seg value={tab} onChange={setTab} options={[["drivers", "I'm a driver"], ["owners", "I own a car"]]} />
           </div>
+          <div className="hidden lg:block"><ScrollRoad steps={4} /></div>
           <Reveal as="ol" stagger key={tab} className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((s, i) => (
               <li key={s.title} className="step-rule border-t-2 border-[#e3f1e9] pt-4">
@@ -185,7 +195,7 @@ export function Landing() {
           <Reveal>
             <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
               <div>
-                <Eyebrow className="mb-3">Plan with confidence</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-2">Run the numbers first</h2>
+                <Eyebrow className="mb-3">Plan with confidence</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-2">Run the numbers first</h2>
                 <p className="text-gray-600 max-w-xl">See what a rental could mean for you before you commit. The figures are examples, so change any of them to match your own situation.</p>
               </div>
               <Seg value={calc} onChange={setCalc} options={[["drivers", "Driver earnings"], ["owners", "Owner income"]]} />
@@ -200,7 +210,7 @@ export function Landing() {
         <section className="py-16 bg-[#f1f6f3]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-end mb-8">
-              <div><Eyebrow className="mb-3">Marketplace</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold">Available now</h2></div>
+              <div><Eyebrow className="mb-3">Marketplace</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold">Available now</h2></div>
               <Link to="/vehicles" className="link-arrow text-[#00873a] font-medium">View all cars <span className="arr">→</span></Link>
             </div>
             <Reveal stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -213,7 +223,7 @@ export function Landing() {
       {/* Protections */}
       <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal><Eyebrow className="mb-3">Why Drive2Own</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold max-w-2xl mb-3">Clear terms for owners and drivers</h2>
+          <Reveal><Eyebrow className="mb-3">Why Drive2Own</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold max-w-2xl mb-3">Clear terms for owners and drivers</h2>
           <p className="text-gray-600 max-w-2xl mb-10">Renting a car for e-hailing works best when nobody is guessing. Drive2Own puts who pays for what, and what happens if something goes wrong, in writing before the keys change hands.</p></Reveal>
           <Reveal stagger className="grid md:grid-cols-2 gap-x-6 gap-y-4">
             {protections.map((p) => (
@@ -235,7 +245,7 @@ export function Landing() {
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-center">
           <div className="space-y-5">
             <span className="inline-block rounded-full bg-[#ffc72c] text-[#10201a] text-xs font-semibold px-3 py-1">New · By application</span>
-            <h2 className="font-display text-3xl md:text-4xl font-bold">Stop renting forever. Drive to Own.</h2>
+            <h2 className="h-reveal font-display text-3xl md:text-4xl font-bold">Stop renting forever. Drive to Own.</h2>
             <p className="text-green-50/90 max-w-xl">
               Join a small group of verified drivers who each pay a fixed monthly contribution. When your turn comes, we buy an inspected, insured and tracked car,
               and every payment you make after that counts toward owning it.
@@ -261,7 +271,7 @@ export function Landing() {
       {/* FAQ */}
       <section id="faq" className="py-16 bg-[#f1f6f3] scroll-mt-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <Reveal><Eyebrow className="mb-3">Questions</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-8">Frequently asked questions</h2></Reveal>
+          <Reveal><Eyebrow className="mb-3">Questions</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-8">Frequently asked questions</h2></Reveal>
           <Reveal variant="fade"><Accordion type="single" collapsible className="bg-white rounded-xl border px-5">
             {FAQ.map(([q, a], i) => (
               <AccordionItem key={q} value={`q${i}`}>

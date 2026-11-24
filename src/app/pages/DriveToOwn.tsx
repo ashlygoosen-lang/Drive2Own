@@ -8,7 +8,7 @@ import {
   ReceiptText, ShieldCheck, Users, Wrench, X,
 } from "lucide-react";
 import { useTitle } from "../../lib/useTitle";
-import { HeroAmbient, Magnetic, SplitWords } from "../components/Motion";
+import { HeroAmbient, Magnetic, ScrollRoad, SplitWords, TiltStage } from "../components/Motion";
 import { Eyebrow } from "../components/Layout";
 
 const CONTACT = import.meta.env.VITE_CONTACT_EMAIL as string | undefined;
@@ -119,7 +119,7 @@ export function DriveToOwn() {
       <section className="hero-ambient bg-[#0e3b2e] text-white">
         <HeroAmbient />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-24 grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
-          <div className="space-y-6">
+          <div className="scroll-out space-y-6">
             <span className="enter inline-block rounded-full bg-[#ffc72c] text-[#10201a] text-xs font-semibold px-3 py-1">By application · Opening in phases</span>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05]">
               <SplitWords text="Drive today." delay={150} />{" "}<SplitWords text="Own tomorrow." delay={360} wordClassName="text-shimmer" />
@@ -133,8 +133,28 @@ export function DriveToOwn() {
               <Magnetic><a href="#how" className="btn-ghost-premium w-full inline-flex items-center justify-center h-12 px-7 rounded-lg border border-white/40 font-semibold hover:bg-white/10">See how it works</a></Magnetic>
             </div>
           </div>
-          <div className="enter-card spotlight on-dark bg-white/5 border border-white/15 rounded-2xl p-6 space-y-4 backdrop-blur-sm" style={{ ["--d" as string]: 500 }}>
-            <h2 className="font-display text-lg font-bold">What makes it different</h2>
+          <TiltStage max={4} className="scroll-out-slow">
+          <div className="tilt-card enter-card spotlight on-dark relative bg-white/[0.06] border border-white/15 rounded-3xl p-6 md:p-7 backdrop-blur-sm" style={{ ["--d" as string]: 500 }}>
+            <div className="flex items-center gap-5 pb-6 mb-6 border-b border-white/10">
+              <svg viewBox="0 0 120 120" className="own-ring w-28 h-28 shrink-0" aria-hidden>
+                <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="10" />
+                <circle cx="60" cy="60" r="48" fill="none" stroke="url(#ownGrad)" strokeWidth="10" strokeLinecap="round" className="own-ring-fill" transform="rotate(-90 60 60)" />
+                <defs><linearGradient id="ownGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#3fbf7f" /><stop offset="1" stopColor="#ffc72c" /></linearGradient></defs>
+                <g transform="translate(43 49)"><path d="M3 15Q2.4 10.8 6.6 10l5.4-1Q15 4 20 3.8h6.4q4 .5 6.4 5l1.6.6q1.6.7 1.6 2.8V15z" fill="#ffc72c" /><circle cx="10" cy="15.5" r="3" fill="#0e3b2e" stroke="#ffc72c" strokeWidth="1.2" /><circle cx="28" cy="15.5" r="3" fill="#0e3b2e" stroke="#ffc72c" strokeWidth="1.2" /></g>
+              </svg>
+              <div>
+                <div className="text-xs uppercase tracking-[0.18em] text-[#ffc72c] font-semibold">Your path to ownership</div>
+                <ol className="mt-3 space-y-2 text-sm">
+                  {["Contribute with your group", "Drive under a written agreement", "Own it, in your name"].map((t, i) => (
+                    <li key={t} className="own-stage flex items-center gap-2.5" style={{ ["--d" as string]: 900 + i * 650 }}>
+                      <span className="own-dot w-5 h-5 rounded-full grid place-items-center text-[10px] font-bold">{i + 1}</span>{t}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+            <h2 className="font-display text-lg font-bold mb-4">What makes it different</h2>
+            <div className="space-y-4">
             {[
               [ReceiptText, "The full monthly cost before you sign, not just a headline instalment"],
               [ShieldCheck, "Every car inspected, insured and tracked"],
@@ -148,14 +168,16 @@ export function DriveToOwn() {
                 </div>
               );
             })}
+            </div>
           </div>
+          </TiltStage>
         </div>
       </section>
 
       {/* Problem */}
       <section className="py-16 md:py-20">
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 lg:gap-16">
-          <div><Eyebrow className="mb-3">The problem</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold">Most drivers can't get finance. Informal groups carry real risk.</h2></div>
+          <div><Eyebrow className="mb-3">The problem</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold">Most drivers can't get finance. Informal groups carry real risk.</h2></div>
           <div className="space-y-4 text-gray-700 leading-relaxed">
             <p>Most e-hailing drivers don't have a deposit, a perfect credit record or cash to buy a car. Bank finance, when it's approved, means a monthly instalment with insurance, servicing, tyres and licensing on top.</p>
             <p>Savings groups can work, but they run on trust alone, usually with no written terms and no one accountable when something goes wrong.</p>
@@ -167,8 +189,9 @@ export function DriveToOwn() {
       {/* How it works */}
       <section id="how" className="py-16 md:py-20 bg-[#f1f6f3] scroll-mt-16">
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Eyebrow className="mb-3">The programme</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-3">How it works</h2>
+          <Eyebrow className="mb-3">The programme</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-3">How it works</h2>
           <p className="text-gray-600 max-w-2xl mb-10">You'll know your group size, your monthly contribution and your expected turn window before you join. Turns are allocated by a published schedule or a recorded draw that members can witness.</p>
+          <div className="hidden lg:block"><ScrollRoad steps={5} /></div>
           <Reveal as="ol" stagger className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
             {STEPS.map((s, i) => (
               <li key={s.title} className="step-rule border-t-2 border-[#d5e6dc] pt-4">
@@ -185,7 +208,7 @@ export function DriveToOwn() {
       <section className="py-16 md:py-20">
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-[1fr_1fr] gap-10 lg:gap-16 items-start">
           <div>
-            <Eyebrow className="mb-3">Transparent pricing</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-3">One all-in monthly figure</h2>
+            <Eyebrow className="mb-3">Transparent pricing</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-3">One all-in monthly figure</h2>
             <p className="text-gray-600 mb-6">Before you sign, you get a Total Monthly Cost Summary that lists every item below, with its amount and whether it's included. Use it to compare us honestly with any other offer.</p>
             <div className="hero-ambient spotlight on-dark rounded-2xl bg-[#0e3b2e] text-white p-6 space-y-2">
               <div className="text-xs uppercase tracking-wide text-[#ffc72c] font-semibold">Why this matters</div>
@@ -212,7 +235,7 @@ export function DriveToOwn() {
       {/* Protections */}
       <section id="protection" className="py-16 md:py-20 bg-[#f1f6f3] scroll-mt-16">
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Eyebrow className="mb-3">Protection</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-3 max-w-2xl">How we protect you</h2>
+          <Eyebrow className="mb-3">Protection</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-3 max-w-2xl">How we protect you</h2>
           <p className="text-gray-600 max-w-2xl mb-10">You're trusting us with your money and your income, so we're open about how the programme reduces risk.</p>
           <Reveal stagger className="grid md:grid-cols-2 gap-6">
             {PROTECTIONS.map((p) => (
@@ -235,7 +258,7 @@ export function DriveToOwn() {
       {/* If something goes wrong */}
       <section className="py-16 md:py-20">
         <Reveal className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Eyebrow className="mb-3">Plain answers</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-8">If something goes wrong</h2>
+          <Eyebrow className="mb-3">Plain answers</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-8">If something goes wrong</h2>
           <Reveal as="dl" stagger className="divide-y border rounded-2xl">
             {IF_WRONG.map(([s, w]) => (
               <div key={s} className="grid sm:grid-cols-[14rem_1fr] gap-1 sm:gap-6 p-5 transition-colors duration-300 hover:bg-[#f7fbf9]">
@@ -257,7 +280,7 @@ export function DriveToOwn() {
       {/* Compare */}
       <section className="py-16 md:py-20 bg-[#f1f6f3]">
         <Reveal className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Eyebrow className="mb-3">Your options</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-3">Compare your options</h2>
+          <Eyebrow className="mb-3">Your options</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-3">Compare your options</h2>
           <p className="text-gray-600 max-w-2xl mb-8">No single option suits everyone. Whatever you choose, compare them with the full monthly cost in front of you.</p>
           <div className="overflow-x-auto bg-white rounded-2xl border">
             <table className="w-full min-w-[640px] text-center">
@@ -286,7 +309,7 @@ export function DriveToOwn() {
       {/* Who it's for */}
       <section className="py-16 md:py-20">
         <Reveal className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Eyebrow className="mb-3">Who it's for</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-8">Is it right for you?</h2>
+          <Eyebrow className="mb-3">Who it's for</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-8">Is it right for you?</h2>
           <Reveal stagger className="grid md:grid-cols-2 gap-6">
             <div className="spotlight lift rounded-2xl border-2 border-[#00873a] p-6">
               <h3 className="font-semibold text-lg mb-4">A good fit if you</h3>
@@ -312,7 +335,7 @@ export function DriveToOwn() {
       {/* FAQ */}
       <section className="py-16 bg-[#f1f6f3]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <Reveal><Eyebrow className="mb-3">Questions</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-8">Drive to Own questions</h2></Reveal>
+          <Reveal><Eyebrow className="mb-3">Questions</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold mb-8">Drive to Own questions</h2></Reveal>
           <Reveal variant="fade"><Accordion type="single" collapsible className="bg-white rounded-xl border px-5">
             {FAQ.map(([q, a], i) => (
               <AccordionItem key={q} value={`q${i}`}>
@@ -329,7 +352,7 @@ export function DriveToOwn() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal variant="scale" className="hero-ambient spotlight on-dark rounded-2xl bg-[#0e3b2e] text-white p-8 md:p-12 grid md:grid-cols-[1.2fr_0.8fr] gap-8 items-center">
             <div className="space-y-4">
-              <Eyebrow dark className="mb-3">Apply</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold">Ready to start?</h2>
+              <Eyebrow dark className="mb-3">Apply</Eyebrow><h2 className="h-reveal font-display text-3xl md:text-4xl font-bold">Ready to start?</h2>
               <p className="text-green-50/90">Register your interest and we'll contact you when a group opens in your area. Creating a driver account now and uploading your documents gets you verified sooner.</p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <a href={interestHref} className="btn-premium inline-flex items-center justify-center h-11 px-6 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Register your interest</a>

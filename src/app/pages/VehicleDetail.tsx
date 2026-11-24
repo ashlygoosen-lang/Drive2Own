@@ -87,7 +87,7 @@ export function VehicleDetail() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10 grid lg:grid-cols-3 gap-8 lg:gap-10">
         <div className="lg:col-span-2 space-y-8">
           <div className="enter-card relative overflow-hidden rounded-3xl border border-[#e3ebe6] shadow-[0_30px_60px_-40px_rgba(14,59,46,0.5)]">
-            <VehicleImage src={v.imageUrl} color={v.color} className="w-full h-72 md:h-[26rem]" />
+            <div className="img-reveal"><VehicleImage src={v.imageUrl} color={v.color} className="w-full h-72 md:h-[26rem]" /></div>
             <div className="absolute top-4 right-4 flex gap-2">
               <button onClick={share} aria-label="Share this car" className="w-9 h-9 rounded-full bg-white/95 shadow flex items-center justify-center hover:scale-105 transition-transform"><Link2 className="w-5 h-5 text-gray-600" /></button>
               <SaveButton id={v.id} />

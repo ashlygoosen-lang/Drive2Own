@@ -101,7 +101,7 @@ export function VehicleCard({ v, row = false }: { v: Vehicle; row?: boolean }) {
     <Link to={`/vehicles/${v.id}`} className="group block h-full rounded-xl">
       <Card className={`lift overflow-hidden h-full relative ${row ? "sm:flex" : ""}`}>
         <SaveButton id={v.id} className="absolute top-3 right-3 z-10" />
-        <div className={`img-zoom ${row ? "w-full sm:w-64 h-44 shrink-0" : "w-full h-44"}`}><VehicleImage src={v.imageUrl} color={v.color} className="w-full h-full" /></div>
+        <div className={`img-zoom img-reveal ${row ? "w-full sm:w-64 h-44 shrink-0" : "w-full h-44"}`}><VehicleImage src={v.imageUrl} color={v.color} className="w-full h-full" /></div>
         <div className="p-4 space-y-3 flex-1">
           <div className="flex justify-between items-start gap-2">
             <div>

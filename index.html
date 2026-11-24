@@ -19,11 +19,30 @@
       <meta property="og:description" content="Rent a car by the week or join our rent-to-own programme. Clear terms for e-hailing drivers in South Africa." />
       <meta name="twitter:card" content="summary" />
       <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
+      <style>
+        #preload { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #0e3b2e; transition: opacity .5s cubic-bezier(.16,1,.3,1), visibility .5s; }
+        #preload.gone { opacity: 0; visibility: hidden; }
+        #preload .pl { display: flex; flex-direction: column; align-items: center; gap: 18px; opacity: 0; animation: pl-in .6s cubic-bezier(.16,1,.3,1) .15s forwards; }
+        #preload .bar { width: 120px; height: 3px; border-radius: 3px; background: rgba(255,255,255,.12); overflow: hidden; }
+        #preload .bar i { display: block; width: 40%; height: 100%; border-radius: 3px; background: linear-gradient(90deg,#3fbf7f,#ffc72c); animation: pl-bar 1.1s cubic-bezier(.65,0,.35,1) infinite; }
+        #preload path.road { stroke-dasharray: 40; stroke-dashoffset: 40; animation: pl-draw 1s cubic-bezier(.16,1,.3,1) .3s forwards; }
+        @keyframes pl-in { to { opacity: 1; } }
+        @keyframes pl-bar { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+        @keyframes pl-draw { to { stroke-dashoffset: 0; } }
+        @media (prefers-reduced-motion: reduce) { #preload .pl { animation: none; opacity: 1; } #preload .bar i { animation: none; width: 100%; } #preload path.road { animation: none; stroke-dashoffset: 0; } }
+      </style>
+
       
     </head>
 
     <body>
       
+      <div id="preload" aria-hidden="true">
+        <div class="pl">
+          <svg viewBox="0 0 40 40" width="56" height="56"><rect width="40" height="40" rx="11" fill="#14503f"/><path class="road" d="M11 29c4.5-1 7-3.6 8.6-7.4L22.4 15" fill="none" stroke="#ffc72c" stroke-width="3.2" stroke-linecap="round"/><path d="M17.6 13.6 23.6 11l1.6 6.4" fill="none" stroke="#ffc72c" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 29c2.6-.6 4.6-1.8 6-3.6" fill="none" stroke="#3fbf7f" stroke-width="3.2" stroke-linecap="round"/></svg>
+          <div class="bar"><i></i></div>
+        </div>
+      </div>
       <div id="root"></div>
       <script type="module" src="/src/main.tsx"></script>
       

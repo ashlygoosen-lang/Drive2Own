@@ -60,7 +60,7 @@ export function Footer({ cta = true }: { cta?: boolean }) {
               {CONTACT && <li><a href={`mailto:${CONTACT}`} className="flex items-center gap-2.5 hover:text-white transition-colors"><Mail className="w-4 h-4 text-[#ffc72c] shrink-0" />{CONTACT}</a></li>}
             </ul>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="foot-cascade grid grid-cols-2 md:grid-cols-4 gap-8">
             {COLUMNS.map((c) => (
               <nav key={c.title} aria-label={c.title} className="space-y-4">
                 <h3 className="text-sm font-semibold text-white">{c.title}</h3>
