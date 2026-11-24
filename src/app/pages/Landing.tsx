@@ -11,14 +11,14 @@ import { Reveal } from "../components/Reveal";
 import { useTitle } from "../../lib/useTitle";
 
 const DRIVER_STEPS = [
-  { title: "Create your account", text: "Sign up and upload your ID, driver's licence and PrDP once. We review them so owners can trust who they're renting to." },
+  { title: "Create your account", text: "Sign up and upload your ID, driver's licence and PrDP once. Our team reviews them, so owners know exactly who they're renting to." },
   { title: "Choose a car", text: "Filter by platform and weekly rate. Every listing shows the rate, deposit and which platforms the car is approved for." },
   { title: "Agree the terms", text: "When the owner accepts your request, you both read and accept a written agreement covering fines, repairs, insurance and damage." },
-  { title: "Collect the car and drive", text: "Pay the deposit and weekly rent on schedule. Every payment is recorded, and you can pay online." },
+  { title: "Collect the car and drive", text: "Pay the deposit, then weekly rent on schedule. Every payment is recorded, so there's never an argument about what's been paid." },
 ];
 const OWNER_STEPS = [
   { title: "List your car", text: "Add photos, your weekly rate, the deposit and the platforms the car qualifies for." },
-  { title: "Review requests", text: "See each driver's request and their verified documents before you decide. You choose who drives your car." },
+  { title: "Review requests", text: "See each driver's request, platform and verified documents before you decide. You choose who drives your car." },
   { title: "Confirm insurance and sign", text: "Confirm the car is insured for e-hailing, accept the agreement, and hand over the keys once both sides have signed." },
   { title: "Track your income", text: "A weekly payment schedule is created for you. Mark payments received, or let the driver pay online." },
 ];
@@ -26,9 +26,10 @@ const FAQ = [
   ["What do I need to rent a car as a driver?", "A valid South African ID or passport, a driver's licence and a Professional Driving Permit (PrDP). You'll also need an approved driver account on Uber, inDrive or Bolt. Each platform has its own driver and vehicle requirements, so check their current rules before you request a car."],
   ["How much does it cost?", "Each owner sets their own weekly rate and refundable deposit, shown on every listing before you send a request. The total for your rental period is calculated for you on the car's page."],
   ["Who pays for insurance, repairs and fines?", "The owner confirms the car is insured for e-hailing use and pays for scheduled servicing and wear-and-tear repairs. The driver pays for fuel, traffic fines, tolls and damage caused by negligence. These terms are written into the rental agreement both sides accept before handover."],
+  ["Can I end up owning the car?", "Not through a normal rental: a car you rent on the marketplace stays the owner's. If ownership is your goal, our Drive to Own programme is built for it. You join a verified driver group, we buy the car, and part of each payment counts toward owning it."],
   ["Can I drive for more than one platform?", "Yes, if the owner has approved the car for them. When you send a request, you choose the platform you will drive on."],
   ["How do payments work?", "Once the car is handed over, a payment schedule is created: the deposit up front, then rent every week. Owners confirm each payment they receive, and drivers can pay online where it is enabled."],
-  ["Is Drive2Own part of Uber, inDrive or Bolt?", "No. Drive2Own is an independent marketplace and is not affiliated with those companies. The rental agreement is between the owner and the driver."],
+  ["Is Drive2Own part of Uber, inDrive or Bolt?", "No. Drive2Own is independent and is not affiliated with, endorsed by or sponsored by Uber, Bolt or inDrive. On the marketplace, the rental agreement is between the owner and the driver."],
   ["Who can see my documents?", "Only you, Drive2Own's review team, and an owner you have sent a request to. Documents are stored privately and are never shown publicly. See our privacy policy for details."],
 ];
 
@@ -69,14 +70,14 @@ export function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center">
           <div className="space-y-6">
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05]">
-              Rent a car and start earning on Uber, inDrive or Bolt.
+              Rent a car this week. Work toward owning one.
             </h1>
             <p className="text-lg text-green-50/90 max-w-xl">
-              Drive2Own connects car owners with licensed e-hailing drivers. Choose a car, sign a clear agreement, pay weekly, and keep what you earn.
+              Rent a car from a verified owner and start driving on Uber, Bolt or inDrive, with the weekly rate, deposit and terms in writing before you commit. When you're ready, our Drive to Own programme gives you a structured path to a car in your own name.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link to="/vehicles" className="inline-flex items-center justify-center h-12 px-7 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Find a car</Link>
-              <Link to="/join?role=owner" className="inline-flex items-center justify-center h-12 px-7 rounded-lg border border-white/40 font-semibold hover:bg-white/10">List your car</Link>
+              <Link to="/drive-to-own" className="inline-flex items-center justify-center h-12 px-7 rounded-lg border border-white/40 font-semibold hover:bg-white/10">Explore Drive to Own</Link>
             </div>
           </div>
 
@@ -98,6 +99,7 @@ export function Landing() {
                 </li>
               ))}
             </ul>
+            <Link to="/join?role=owner" className="block text-center text-sm font-medium text-[#00873a] hover:underline pt-3 border-t">Own a car? List it and earn weekly →</Link>
           </div>
         </div>
       </section>
@@ -147,7 +149,7 @@ export function Landing() {
             <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
               <div>
                 <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">Run the numbers first</h2>
-                <p className="text-gray-600 max-w-xl">Work out what a rental could mean for you. Change any figure to match your own situation.</p>
+                <p className="text-gray-600 max-w-xl">See what a rental could mean for you before you commit. The figures are examples, so change any of them to match your own situation.</p>
               </div>
               <div role="tablist" className="inline-flex rounded-lg border p-1 bg-gray-50">
                 {(["drivers", "owners"] as const).map((t) => (
@@ -182,7 +184,7 @@ export function Landing() {
       <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-display text-3xl md:text-4xl font-bold max-w-2xl mb-3">Clear terms for owners and drivers</h2>
-          <p className="text-gray-600 max-w-2xl mb-10">Renting a car for e-hailing works best when everyone knows what to expect. Drive2Own puts the important things in writing.</p>
+          <p className="text-gray-600 max-w-2xl mb-10">Renting a car for e-hailing works best when nobody is guessing. Drive2Own puts who pays for what, and what happens if something goes wrong, in writing before the keys change hands.</p>
           <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
             {protections.map((p) => (
               <div key={p.title} className="flex gap-4">
@@ -195,6 +197,34 @@ export function Landing() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Drive to Own */}
+      <section className="py-16 md:py-20 bg-[#0e3b2e] text-white">
+        <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-center">
+          <div className="space-y-5">
+            <span className="inline-block rounded-full bg-[#ffc72c] text-[#10201a] text-xs font-semibold px-3 py-1">New · By application</span>
+            <h2 className="font-display text-3xl md:text-4xl font-bold">Stop renting forever. Drive to Own.</h2>
+            <p className="text-green-50/90 max-w-xl">
+              Join a small group of verified drivers who each pay a fixed monthly contribution. When your turn comes, we buy an inspected, insured and tracked car,
+              and every payment you make after that counts toward owning it.
+            </p>
+            <Link to="/drive-to-own" className="inline-flex h-12 items-center px-7 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">How Drive to Own works</Link>
+          </div>
+          <ul className="grid sm:grid-cols-2 gap-4">
+            {[
+              ["All-in cost up front", "Insurance, tracking and servicing shown before you sign."],
+              ["Money kept separate", "Group contributions are never mixed with company funds."],
+              ["Written agreement", "A plain-language contract with a one-page summary."],
+              ["Ownership in your name", "We handle the paperwork when your last payment clears."],
+            ].map(([t, d]) => (
+              <li key={t} className="rounded-xl bg-white/5 border border-white/15 p-5">
+                <div className="font-semibold mb-1">{t}</div>
+                <div className="text-sm text-green-50/80">{d}</div>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </section>
 
       {/* FAQ */}

@@ -4,6 +4,7 @@ import { Terms, Privacy } from "./pages/Legal";
 import { Saved } from "./pages/Saved";
 import { NotFound } from "./pages/NotFound";
 import { Landing } from "./pages/Landing";
+import { DriveToOwn } from "./pages/DriveToOwn";
 import { Join } from "./pages/Join";
 import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
@@ -22,6 +23,7 @@ function Root() {
 
 export const router = createBrowserRouter([{ path: "/", Component: Root, children: [
   { index: true, Component: Landing },
+  { path: "drive-to-own", Component: DriveToOwn },
   { path: "join", Component: Join },
   { path: "login", Component: Login },
   { path: "vehicles", Component: Vehicles },

@@ -17,7 +17,8 @@ export function Header() {
 
   const items = (
     <>
-      <NavLink to="/vehicles" className={link} onClick={close}>Find a Vehicle</NavLink>
+      <NavLink to="/vehicles" className={link} onClick={close}>Rent a Car</NavLink>
+      <NavLink to="/drive-to-own" className={link} onClick={close}>Drive to Own</NavLink>
       <NavLink to="/saved" className={link} onClick={close}><span className="inline-flex items-center gap-1"><Heart className="w-4 h-4" />Saved</span></NavLink>
       {user ? (
         <>
