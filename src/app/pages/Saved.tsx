@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
+import { Heart } from "lucide-react";
+import { EmptyState, PageHero, PageShell } from "../components/Layout";
 import { VehicleCard, VehicleCardSkeleton } from "../components/Common";
 import { api, type Vehicle } from "../../lib/api";
 import { useFavorites } from "../../lib/favorites";
@@ -22,23 +22,19 @@ export function Saved() {
   }, [ids]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="font-display text-3xl font-bold mb-1">Saved cars</h1>
-        <p className="text-gray-600 mb-6">Cars you've saved on this device.</p>
+    <PageShell hero={
+      <PageHero compact eyebrow="Shortlist" crumbs={[{ label: "Saved cars" }]} title="Saved cars" subtitle="Cars you've saved on this device, ready to compare." />
+    }>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-16">
         {ids.length === 0 ? (
-          <div className="bg-white rounded-xl border p-10 text-center space-y-3">
-            <p className="text-gray-600">You haven't saved any cars yet. Tap the heart on a car to keep it here.</p>
-            <Link to="/vehicles" className="inline-flex h-10 items-center px-5 rounded-lg bg-[#0e3b2e] text-white font-semibold">Browse cars</Link>
-          </div>
+          <EmptyState icon={Heart} title="No saved cars yet" text="Tap the heart on any car to keep it here while you compare."
+            action={<Link to="/vehicles" className="inline-flex h-10 items-center px-5 rounded-lg bg-[#0e3b2e] text-white font-semibold">Browse cars</Link>} />
         ) : (
           <div className="cascade grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {vehicles === null ? [1, 2, 3].map((i) => <VehicleCardSkeleton key={i} />) : vehicles.map((v) => <VehicleCard key={v.id} v={v} />)}
           </div>
         )}
       </div>
-      <Footer />
-    </div>
+    </PageShell>
   );
 }

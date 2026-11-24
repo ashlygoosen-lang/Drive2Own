@@ -1,17 +1,16 @@
-import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
+import { PageHero, PageShell } from "../components/Layout";
+import { useTitle } from "../../lib/useTitle";
 
 function Page({ title, updated, children }: { title: string; updated: string; children: React.ReactNode }) {
+  useTitle(title);
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-6 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-8 [&_p]:text-gray-700 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-1 [&_ul]:text-gray-700">
-        <h1 className="font-display text-4xl font-bold">{title}</h1>
-        <p className="text-sm text-gray-500">Last updated {updated}</p>
-        {children}
+    <PageShell hero={<PageHero compact eyebrow="Legal" crumbs={[{ label: title }]} title={title} subtitle={`Last updated ${updated}`} />}>
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+        <div className="rounded-3xl border border-[#e3ebe6] bg-white p-6 sm:p-10 space-y-5 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-bold [&_h2]:pt-6 [&_h2]:mt-2 [&_h2]:border-t [&_h2]:border-[#eef3f0] [&_p]:text-gray-700 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-1.5 [&_ul]:text-gray-700 [&_li]:marker:text-[#00873a]">
+          {children}
+        </div>
       </article>
-      <Footer />
-    </div>
+    </PageShell>
   );
 }
 

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Navigate } from "react-router";
 import { toast } from "sonner";
-import { Header } from "../components/Header";
+import { CarFront, FileSearch, KeyRound, ShieldCheck, Users } from "lucide-react";
+import { EmptyState, PageHero, PageShell, StatCard } from "../components/Layout";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent } from "../components/ui/card";
@@ -41,28 +42,28 @@ export function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-        <h1 className="text-3xl font-bold">Admin</h1>
+    <PageShell cta={false} hero={<PageHero compact eyebrow="Administration" title="Admin" subtitle="Platform overview and driver document verification." />}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 space-y-6">
         {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {([["Owners", stats.owners], ["Drivers", stats.drivers], ["Vehicles", stats.vehicles], ["Active rentals", stats.activeRentals], ["Docs to review", stats.documentsToReview]] as const).map(([k, v]) => (
-              <Card key={k}><CardContent className="p-4"><div className="text-sm text-gray-500">{k}</div><div className="text-2xl font-bold">{v}</div></CardContent></Card>
-            ))}
+          <div className="relative -mt-8 cascade grid grid-cols-2 md:grid-cols-5 gap-4">
+            <StatCard icon={KeyRound} label="Owners" value={stats.owners} />
+            <StatCard icon={Users} label="Drivers" value={stats.drivers} />
+            <StatCard icon={CarFront} label="Cars" value={stats.vehicles} />
+            <StatCard icon={ShieldCheck} label="Active rentals" value={stats.activeRentals} />
+            <StatCard icon={FileSearch} label="Docs to review" value={stats.documentsToReview} tone={stats.documentsToReview ? "alert" : "default"} />
           </div>
         )}
-        <div className="flex gap-2 border-b">
+        <div className="flex gap-2 flex-wrap">
           {(["uploaded", "verified", "rejected"] as const).map((s) => (
             <button key={s} onClick={() => setFilter(s)}
-              className={`px-4 py-2 -mb-px border-b-2 capitalize ${filter === s ? "border-[#00873a] text-[#00873a] font-medium" : "border-transparent text-gray-600"}`}>
+              className={`px-4 py-2 rounded-full border text-sm font-medium capitalize transition-all ${filter === s ? "bg-[#0e3b2e] border-[#0e3b2e] text-white" : "bg-white border-[#d5e2da] text-gray-700 hover:border-[#0e3b2e]"}`}>
               {s === "uploaded" ? "To review" : s}
             </button>
           ))}
         </div>
-        {docs.length === 0 && <p className="text-gray-500">No documents in this list.</p>}
+        {docs.length === 0 && <EmptyState icon={FileSearch} title="Nothing in this list" text="Documents appear here as drivers and owners upload them." />}
         {docs.map((d) => (
-          <Card key={d.id}>
+          <Card key={d.id} className="lift">
             <CardContent className="p-4 space-y-3">
               <div className="flex flex-wrap justify-between gap-2">
                 <div>
@@ -83,6 +84,6 @@ export function Admin() {
           </Card>
         ))}
       </div>
-    </div>
+    </PageShell>
   );
 }

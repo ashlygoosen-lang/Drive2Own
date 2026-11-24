@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
-import { Header } from "../components/Header";
+import { CalendarClock, CarFront, ClipboardList, FileCheck2, Inbox, KeyRound, Plus, Search, Wallet } from "lucide-react";
+import { EmptyState, PageHero, PageShell, StatCard } from "../components/Layout";
+import { useTitle } from "../../lib/useTitle";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { StatusBadge, VehicleImage, fmtDate } from "../components/Common";
@@ -10,11 +12,6 @@ import { useAuth } from "../../lib/auth";
 
 const msg = (e: unknown) => (e instanceof Error ? e.message : "Something went wrong");
 
-function Stat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <Card><CardContent className="p-5"><div className="text-sm text-gray-500">{label}</div><div className="text-2xl font-bold">{value}</div></CardContent></Card>
-  );
-}
 
 function Payments({ rental, isOwner }: { rental: Rental; isOwner: boolean }) {
   const [payments, setPayments] = useState<Payment[] | null>(null);
@@ -123,7 +120,7 @@ function RentalCard({ r, isOwner, reload }: { r: Rental; isOwner: boolean; reloa
     <Card>
       <CardContent className="p-5 space-y-4">
         <div className="flex gap-4">
-          <VehicleImage src={r.vehicle.imageUrl} color={r.vehicle.color} className="w-24 h-20 rounded-lg shrink-0" />
+          <VehicleImage src={r.vehicle.imageUrl} color={r.vehicle.color} className="w-28 h-20 rounded-xl shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <Link to={`/vehicles/${r.vehicle.id}`} className="font-semibold hover:underline">{r.vehicle.year} {r.vehicle.make} {r.vehicle.model}</Link>
@@ -179,7 +176,9 @@ function RentalCard({ r, isOwner, reload }: { r: Rental; isOwner: boolean; reloa
 }
 
 function RentalList({ rentals, isOwner, reload }: { rentals: Rental[]; isOwner: boolean; reload: () => void }) {
-  if (rentals.length === 0) return <p className="text-gray-500">Nothing here yet.</p>;
+  if (rentals.length === 0) return isOwner
+    ? <EmptyState icon={Inbox} title="No requests yet" text="When a driver requests one of your cars, it appears here for you to review." action={<Link to="/vehicles/new" className="inline-flex h-10 items-center px-5 rounded-lg bg-[#0e3b2e] text-white font-semibold">List another car</Link>} />
+    : <EmptyState icon={Search} title="No rental requests yet" text="Find a car that suits your platform and budget, then send the owner a request." action={<Link to="/vehicles" className="inline-flex h-10 items-center px-5 rounded-lg bg-[#0e3b2e] text-white font-semibold">Browse cars</Link>} />;
   return <div className="space-y-4">{rentals.map((r) => <RentalCard key={r.id} r={r} isOwner={isOwner} reload={reload} />)}</div>;
 }
 
@@ -190,6 +189,7 @@ export function Dashboard() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [docCount, setDocCount] = useState(0);
   const [tab, setTab] = useState<"rentals" | "vehicles">("rentals");
+  useTitle("Dashboard");
 
   const load = useCallback(async () => {
     try {
@@ -214,49 +214,48 @@ export function Dashboard() {
   const pending = rentals.filter((r) => r.status === "pending").length;
   const active = rentals.filter((r) => r.status === "active").length;
 
+  const first = user?.fullName.split(" ")[0];
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-        <div className="flex flex-wrap justify-between items-center gap-3">
-          <div>
-            <h1 className="text-3xl font-bold">Hi {user?.fullName.split(" ")[0]}</h1>
-            <p className="text-gray-600">{isOwner ? "Manage your vehicles and rental requests." : "Track your rental requests and weekly payments."}</p>
-          </div>
-          {isOwner
-            ? <Link to="/vehicles/new"><Button className="bg-[#00873a] hover:bg-[#006f2f]">List a vehicle</Button></Link>
-            : <Link to="/vehicles"><Button className="bg-[#00873a] hover:bg-[#006f2f]">Find a vehicle</Button></Link>}
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <PageShell cta={false} hero={
+      <PageHero compact eyebrow={isOwner ? "Owner dashboard" : "Driver dashboard"}
+        title={<>Welcome back, <span className="text-[#ffc72c]">{first}</span></>}
+        subtitle={isOwner ? "Manage your cars, review driver requests and track weekly income." : "Track your rental requests, agreements and weekly payments."}
+        actions={isOwner
+          ? <Link to="/vehicles/new" className="btn-premium inline-flex items-center gap-2 h-12 px-6 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]"><Plus className="w-4 h-4" />List a car</Link>
+          : <Link to="/vehicles" className="btn-premium inline-flex items-center gap-2 h-12 px-6 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]"><Search className="w-4 h-4" />Find a car</Link>} />
+    }>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 space-y-8">
+        <div className="relative -mt-8 cascade grid grid-cols-2 md:grid-cols-4 gap-4">
           {isOwner ? (<>
-            <Stat label="Vehicles listed" value={vehicles.length} />
-            <Stat label="Pending requests" value={pending} />
-            <Stat label="Active rentals" value={active} />
-            <Stat label="Weekly income (active)" value={money(rentals.filter((r) => r.status === "active").reduce((s, r) => s + r.weeklyRate, 0))} />
+            <StatCard icon={CarFront} label="Cars listed" value={vehicles.length} />
+            <StatCard icon={ClipboardList} label="Pending requests" value={pending} tone={pending ? "alert" : "default"} />
+            <StatCard icon={KeyRound} label="Active rentals" value={active} />
+            <StatCard icon={Wallet} label="Weekly income" value={money(rentals.filter((r) => r.status === "active").reduce((s, r) => s + r.weeklyRate, 0))} />
           </>) : (<>
-            <Stat label="Pending requests" value={pending} />
-            <Stat label="Active rental" value={active ? "Yes" : "No"} />
-            <Stat label="Required documents" value={`${docCount} / 3`} />
-            <Stat label="Total requests" value={rentals.length} />
+            <StatCard icon={ClipboardList} label="Pending requests" value={pending} />
+            <StatCard icon={KeyRound} label="Active rental" value={active ? "Yes" : "No"} />
+            <StatCard icon={FileCheck2} label="Required documents" value={`${docCount} / 3`} tone={docCount < 3 ? "alert" : "default"} />
+            <StatCard icon={CalendarClock} label="Total requests" value={rentals.length} />
           </>)}
         </div>
 
         {!isOwner && docCount < 3 && (
-          <Card className="border-amber-300 bg-amber-50">
-            <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
-              <span className="text-sm">Upload your ID, driver's licence and PrDP to start requesting vehicles.</span>
-              <Link to="/documents"><Button size="sm" className="bg-[#00873a] hover:bg-[#006f2f]">Upload documents</Button></Link>
-            </CardContent>
-          </Card>
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-white p-5">
+            <div className="flex items-start gap-3">
+              <span className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0"><FileCheck2 className="w-5 h-5" /></span>
+              <div><div className="font-semibold">Finish your profile</div><div className="text-sm text-gray-600">Upload your ID, driver's licence and PrDP to start requesting cars.</div></div>
+            </div>
+            <Link to="/documents"><Button className="btn-premium">Upload documents</Button></Link>
+          </div>
         )}
 
         {isOwner && (
-          <div className="flex gap-2 border-b">
+          <div role="tablist" className="seg rounded-xl border border-[#e3ebe6] p-1 bg-white" data-active={tab === "rentals" ? 0 : 1}>
+            <span className="seg-pill" aria-hidden />
             {(["rentals", "vehicles"] as const).map((t) => (
-              <button key={t} onClick={() => setTab(t)}
-                className={`px-4 py-2 -mb-px border-b-2 capitalize ${tab === t ? "border-[#00873a] text-[#00873a] font-medium" : "border-transparent text-gray-600"}`}>
-                {t === "rentals" ? `Requests & rentals${pending ? ` (${pending})` : ""}` : "My vehicles"}
+              <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)}
+                className={`px-5 py-2.5 rounded-md text-sm font-semibold ${tab === t ? "text-white" : "text-gray-700 hover:text-[#0e3b2e]"}`}>
+                {t === "rentals" ? `Requests & rentals${pending ? ` (${pending})` : ""}` : `My cars (${vehicles.length})`}
               </button>
             ))}
           </div>
@@ -264,18 +263,18 @@ export function Dashboard() {
 
         {(!isOwner || tab === "rentals") && (
           <section className="space-y-3">
-            {!isOwner && <h2 className="text-xl font-semibold">My rentals</h2>}
+            {!isOwner && <h2 className="font-display text-2xl font-bold">My rentals</h2>}
             <RentalList rentals={rentals} isOwner={isOwner} reload={load} />
           </section>
         )}
 
         {isOwner && tab === "vehicles" && (
           <section className="space-y-4">
-            {vehicles.length === 0 && <p className="text-gray-500">You haven't listed a vehicle yet.</p>}
+            {vehicles.length === 0 && <EmptyState icon={CarFront} title="You haven't listed a car yet" text="Add photos, your weekly rate and the platforms your car qualifies for." action={<Link to="/vehicles/new" className="inline-flex h-10 items-center px-5 rounded-lg bg-[#0e3b2e] text-white font-semibold">List a car</Link>} />}
             {vehicles.map((v) => (
-              <Card key={v.id}>
+              <Card key={v.id} className="lift">
                 <CardContent className="p-5 flex flex-wrap gap-4 items-center">
-                  <VehicleImage src={v.imageUrl} className="w-24 h-20 rounded-lg" />
+                  <VehicleImage src={v.imageUrl} color={v.color} className="w-28 h-20 rounded-xl" />
                   <div className="flex-1 min-w-[200px]">
                     <div className="flex items-center gap-2"><span className="font-semibold">{v.year} {v.make} {v.model}</span><StatusBadge status={v.status} /></div>
                     <p className="text-sm text-gray-600">{v.plate} · {money(v.weeklyRate)}/wk · deposit {money(v.deposit)}</p>
@@ -291,6 +290,6 @@ export function Dashboard() {
           </section>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

@@ -3,12 +3,12 @@ import { Label } from "./ui/label";
 import { PLATFORMS, type Platform } from "../../lib/api";
 
 export const selectClass =
-  "w-full h-9 rounded-md border border-input bg-input-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#00873a]/40";
+  "w-full h-11 rounded-lg border border-[#d9e4dd] bg-white px-3.5 text-sm outline-none transition-[border-color,box-shadow] hover:border-[#b9cdc1] focus-visible:border-[#00873a] focus-visible:ring-4 focus-visible:ring-[#00873a]/15";
 
 export function Field({ label, children, hint }: { label: string; children: ReactNode; hint?: string }) {
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
+      <Label className="text-[13px] font-semibold text-[#10201a]">{label}</Label>
       {children}
       {hint && <p className="text-xs text-gray-500">{hint}</p>}
     </div>
@@ -27,7 +27,7 @@ export function PlatformPicker({ value, onChange }: { value: Platform[]; onChang
             key={p.id}
             onClick={() => toggle(p.id)}
             aria-pressed={on}
-            className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
+            className={`px-4 py-2 rounded-full border text-sm font-medium transition-all ${
               on ? "bg-[#00873a] border-[#00873a] text-white" : "bg-white text-gray-700 hover:border-[#00873a]"
             }`}
           >

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
-import { Header } from "../components/Header";
+import { PageHero, PageShell } from "../components/Layout";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
@@ -61,11 +61,13 @@ export function VehicleForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <div className="max-w-2xl mx-auto px-4 py-10">
+    <PageShell cta={false} hero={
+      <PageHero compact eyebrow={editing ? "Update listing" : "New listing"} crumbs={[{ label: "Dashboard", to: "/dashboard" }, { label: editing ? "Edit car" : "List a car" }]}
+        title={editing ? "Edit your car" : "List your car"} subtitle="Accurate details and a clear photo help drivers choose your car with confidence." />
+    }>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-16"><div className="max-w-3xl">
         <Card>
-          <CardHeader><CardTitle>{editing ? "Edit vehicle" : "List a vehicle"}</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="font-display text-xl">Car details</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={submit} className="space-y-5">
               <div className="grid sm:grid-cols-2 gap-4">
@@ -98,13 +100,13 @@ export function VehicleForm() {
                 <Input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setImage(e.target.files?.[0] ?? null)} />
               </Field>
               <div className="flex gap-3">
-                <Button type="submit" disabled={busy} className="bg-[#00873a] hover:bg-[#006f2f]">{busy ? "Saving…" : editing ? "Save changes" : "List vehicle"}</Button>
-                <Button type="button" variant="outline" onClick={() => navigate("/dashboard")}>Cancel</Button>
+                <Button type="submit" size="lg" disabled={busy} className="btn-premium">{busy ? "Saving…" : editing ? "Save changes" : "Publish listing"}</Button>
+                <Button type="button" size="lg" variant="outline" onClick={() => navigate("/dashboard")}>Cancel</Button>
               </div>
             </form>
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </div></div>
+    </PageShell>
   );
 }

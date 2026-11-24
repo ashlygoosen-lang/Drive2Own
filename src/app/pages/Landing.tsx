@@ -8,6 +8,7 @@ import { BadgeCheck, CalendarCheck, ChevronRight, FileSignature, KeyRound, Lock,
 import { api, money, PLATFORMS, type Vehicle } from "../../lib/api";
 import { DriverCalculator, OwnerCalculator } from "../components/Calculator";
 import { Reveal } from "../components/Reveal";
+import { Eyebrow } from "../components/Layout";
 import { CountUp, HeroAmbient, Magnetic, SplitWords } from "../components/Motion";
 import { useTitle } from "../../lib/useTitle";
 
@@ -87,6 +88,7 @@ export function Landing() {
         <HeroAmbient />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-24 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center">
           <div className="space-y-6">
+            <div className="enter"><Eyebrow dark>E-hailing car rental · South Africa</Eyebrow></div>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05]">
               <SplitWords text="Rent a car this week." delay={80} />{" "}
               <SplitWords text="Work toward owning one." delay={380} wordClassName="text-shimmer" />
@@ -97,6 +99,10 @@ export function Landing() {
             <div className="enter flex flex-col sm:flex-row gap-3" style={{ ["--d" as string]: 850 }}>
               <Magnetic><Link to="/vehicles" className="btn-premium w-full inline-flex items-center justify-center h-12 px-7 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Find a car</Link></Magnetic>
               <Magnetic><Link to="/drive-to-own" className="btn-ghost-premium w-full inline-flex items-center justify-center h-12 px-7 rounded-lg border border-white/40 font-semibold hover:bg-white/10">Explore Drive to Own</Link></Magnetic>
+            </div>
+            <div className="enter flex flex-wrap items-center gap-x-5 gap-y-2 pt-2 text-sm text-green-50/70" style={{ ["--d" as string]: 1000 }}>
+              <span>Cars approved for</span>
+              {["Uber", "Bolt", "inDrive"].map((p) => <span key={p} className="rounded-full border border-white/20 px-3 py-1 font-semibold text-white/90">{p}</span>)}
             </div>
           </div>
 
@@ -125,10 +131,27 @@ export function Landing() {
         </div>
       </section>
 
+      {/* At a glance */}
+      <section aria-label="At a glance" className="bg-white border-b border-[#e3ebe6]">
+        <Reveal stagger className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 lg:grid-cols-4">
+          {[
+            ["3 platforms", "Cars approved for Uber, Bolt and inDrive"],
+            ["Weekly", "Rent paid weekly, with every payment on record"],
+            ["Upload once", "ID, licence and PrDP reviewed by our team"],
+            ["In writing", "Agreement accepted by both sides before handover"],
+          ].map(([k, v]) => (
+            <div key={k} className="py-6 md:py-8 pr-4 odd:pl-0 even:pl-4 even:border-l border-[#e3ebe6] lg:px-6 lg:border-l lg:even:pl-6 lg:first:pl-0 lg:first:border-l-0">
+              <div className="font-display text-2xl md:text-3xl font-extrabold text-[#0e3b2e]">{k}</div>
+              <div className="mt-1 text-sm text-gray-600 max-w-[16rem]">{v}</div>
+            </div>
+          ))}
+        </Reveal>
+      </section>
+
       {/* Requirements */}
-      <section className="bg-[#f1f6f3] border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid md:grid-cols-[auto_1fr] gap-4 md:gap-10 items-center">
-          <h2 className="font-display text-xl font-bold">What drivers need to apply</h2>
+      <section className="bg-[#f1f6f3] border-b border-[#e3ebe6]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 grid md:grid-cols-[auto_1fr] gap-4 md:gap-10 items-center">
+          <h2 className="font-display text-lg font-bold">What drivers need to apply</h2>
           <Reveal as="ul" stagger className="flex flex-wrap gap-x-8 gap-y-2 text-sm">
             {["SA ID or passport", "Valid driver's licence", "Professional Driving Permit (PrDP)", "An approved Uber, inDrive or Bolt driver account"].map((x) => (
               <li key={x} className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-[#00873a] shrink-0" />{x}</li>
@@ -141,7 +164,7 @@ export function Landing() {
       <section id="how-it-works" className="py-16 md:py-20 scroll-mt-16">
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
-            <h2 className="font-display text-3xl md:text-4xl font-bold max-w-xl">From sign-up to the driver's seat in four steps</h2>
+            <div><Eyebrow className="mb-3">How it works</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold max-w-xl">From sign-up to the driver's seat in four steps</h2></div>
             <Seg value={tab} onChange={setTab} options={[["drivers", "I'm a driver"], ["owners", "I own a car"]]} />
           </div>
           <Reveal as="ol" stagger key={tab} className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -162,7 +185,7 @@ export function Landing() {
           <Reveal>
             <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
               <div>
-                <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">Run the numbers first</h2>
+                <Eyebrow className="mb-3">Plan with confidence</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-2">Run the numbers first</h2>
                 <p className="text-gray-600 max-w-xl">See what a rental could mean for you before you commit. The figures are examples, so change any of them to match your own situation.</p>
               </div>
               <Seg value={calc} onChange={setCalc} options={[["drivers", "Driver earnings"], ["owners", "Owner income"]]} />
@@ -177,7 +200,7 @@ export function Landing() {
         <section className="py-16 bg-[#f1f6f3]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-end mb-8">
-              <h2 className="font-display text-3xl font-bold">Available now</h2>
+              <div><Eyebrow className="mb-3">Marketplace</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold">Available now</h2></div>
               <Link to="/vehicles" className="link-arrow text-[#00873a] font-medium">View all cars <span className="arr">→</span></Link>
             </div>
             <Reveal stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -190,7 +213,7 @@ export function Landing() {
       {/* Protections */}
       <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal><h2 className="font-display text-3xl md:text-4xl font-bold max-w-2xl mb-3">Clear terms for owners and drivers</h2>
+          <Reveal><Eyebrow className="mb-3">Why Drive2Own</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold max-w-2xl mb-3">Clear terms for owners and drivers</h2>
           <p className="text-gray-600 max-w-2xl mb-10">Renting a car for e-hailing works best when nobody is guessing. Drive2Own puts who pays for what, and what happens if something goes wrong, in writing before the keys change hands.</p></Reveal>
           <Reveal stagger className="grid md:grid-cols-2 gap-x-6 gap-y-4">
             {protections.map((p) => (
@@ -238,7 +261,7 @@ export function Landing() {
       {/* FAQ */}
       <section id="faq" className="py-16 bg-[#f1f6f3] scroll-mt-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <Reveal><h2 className="font-display text-3xl font-bold mb-8">Frequently asked questions</h2></Reveal>
+          <Reveal><Eyebrow className="mb-3">Questions</Eyebrow><h2 className="font-display text-3xl md:text-4xl font-bold mb-8">Frequently asked questions</h2></Reveal>
           <Reveal variant="fade"><Accordion type="single" collapsible className="bg-white rounded-xl border px-5">
             {FAQ.map(([q, a], i) => (
               <AccordionItem key={q} value={`q${i}`}>
@@ -268,7 +291,7 @@ export function Landing() {
         </Reveal>
       </section>
 
-      <Footer />
+      <Footer cta={false} />
     </div>
   );
 }

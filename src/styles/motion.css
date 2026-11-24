@@ -175,6 +175,12 @@ html { scroll-behavior: smooth; }
 .logo-mark { transition: transform var(--dur-med) var(--ease-out); }
 a:hover > .logo-mark { transform: rotate(-8deg) scale(1.05); }
 
+/* ---------- Footer links ---------- */
+.footer-link { position: relative; display: inline-block; transition: color var(--dur-fast), transform var(--dur-med) var(--ease-out); }
+.footer-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: #ffc72c; transform: scaleX(0); transform-origin: 100% 50%; transition: transform var(--dur-med) var(--ease-out); }
+.footer-link:hover::after { transform: scaleX(1); transform-origin: 0 50%; }
+@media (hover: hover) { .footer-link:hover { transform: translateX(3px); } }
+
 /* ---------- Loading shimmer ---------- */
 .shimmer { position: relative; overflow: hidden; background: #e8efeb; border-radius: 6px; }
 .shimmer::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent); animation: shimmer-x 1.4s infinite; }
