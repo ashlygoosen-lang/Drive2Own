@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router";
 import { Car, Heart, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useAuth } from "../../lib/auth";
 import { NotificationBell } from "./NotificationBell";
@@ -10,8 +10,16 @@ export function Header() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const on = () => setScrolled(window.scrollY > 8);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
+
   const link = ({ isActive }: { isActive: boolean }) =>
-    `hover:text-[#00873a] ${isActive ? "text-[#00873a] font-medium" : "text-gray-700"}`;
+    `nav-link transition-colors hover:text-[#00873a] ${isActive ? "active text-[#00873a] font-medium" : "text-gray-700"}`;
   const close = () => setOpen(false);
   const doLogout = () => { logout(); close(); navigate("/"); };
 
@@ -32,7 +40,7 @@ export function Header() {
         <>
           <NavLink to="/login" className={link} onClick={close}>Login</NavLink>
           <Link to="/join" onClick={close}>
-            <Button className="bg-[#00873a] hover:bg-[#006f2f] w-full">Join Now</Button>
+            <Button className="btn-premium bg-[#00873a] hover:bg-[#006f2f] w-full">Join Now</Button>
           </Link>
         </>
       )}
@@ -40,21 +48,21 @@ export function Header() {
   );
 
   return (
-    <header className="border-b bg-white sticky top-0 z-50">
+    <header className={`site-header border-b bg-white sticky top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#0e3b2e] rounded-lg flex items-center justify-center">
+            <div className="logo-mark w-10 h-10 bg-[#0e3b2e] rounded-lg flex items-center justify-center">
               <Car className="w-6 h-6 text-[#ffc72c]" />
             </div>
             <span className="font-display text-xl font-bold text-[#0e3b2e]">Drive2Own</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">{items}</nav>
-          <button className="md:hidden p-2" onClick={() => setOpen(!open)} aria-label="Menu">
+          <button className="md:hidden p-2" onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}>
             {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
-        {open && <nav className="md:hidden py-4 flex flex-col gap-3 border-t">{items}</nav>}
+        {open && <nav className="menu-enter md:hidden py-4 flex flex-col gap-3 border-t">{items}</nav>}
       </div>
     </header>
   );

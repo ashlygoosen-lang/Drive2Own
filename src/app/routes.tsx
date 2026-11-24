@@ -1,4 +1,5 @@
-import { createBrowserRouter, Outlet } from "react-router";
+import { createBrowserRouter, Outlet, useLocation } from "react-router";
+import { MotionRoot } from "./components/Motion";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { Terms, Privacy } from "./pages/Legal";
 import { Saved } from "./pages/Saved";
@@ -18,7 +19,15 @@ import { Admin } from "./pages/Admin";
 import { RequireAuth } from "./components/Common";
 
 function Root() {
-  return (<><ScrollToHash /><Outlet /></>);
+  const { pathname } = useLocation();
+  return (
+    <>
+      <ScrollToHash />
+      <MotionRoot />
+      {/* Re-keyed on every route so each page arrives with a soft fade-up */}
+      <div key={pathname} className="page-enter"><Outlet /></div>
+    </>
+  );
 }
 
 export const router = createBrowserRouter([{ path: "/", Component: Root, children: [

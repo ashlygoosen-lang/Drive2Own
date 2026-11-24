@@ -118,7 +118,7 @@ export function VehicleDetail() {
           {related.length > 0 && (
             <div>
               <h2 className="font-semibold mb-4">Similar cars</h2>
-              <div className="grid sm:grid-cols-3 gap-4">{related.map((r) => <VehicleCard key={r.id} v={r} />)}</div>
+              <div className="cascade grid sm:grid-cols-3 gap-4">{related.map((r) => <VehicleCard key={r.id} v={r} />)}</div>
             </div>
           )}
         </div>

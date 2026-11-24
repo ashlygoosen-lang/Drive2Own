@@ -8,6 +8,7 @@ import { BadgeCheck, CalendarCheck, ChevronRight, FileSignature, KeyRound, Lock,
 import { api, money, PLATFORMS, type Vehicle } from "../../lib/api";
 import { DriverCalculator, OwnerCalculator } from "../components/Calculator";
 import { Reveal } from "../components/Reveal";
+import { CountUp, HeroAmbient, Magnetic, SplitWords } from "../components/Motion";
 import { useTitle } from "../../lib/useTitle";
 
 const DRIVER_STEPS = [
@@ -32,6 +33,22 @@ const FAQ = [
   ["Is Drive2Own part of Uber, inDrive or Bolt?", "No. Drive2Own is independent and is not affiliated with, endorsed by or sponsored by Uber, Bolt or inDrive. On the marketplace, the rental agreement is between the owner and the driver."],
   ["Who can see my documents?", "Only you, Drive2Own's review team, and an owner you have sent a request to. Documents are stored privately and are never shown publicly. See our privacy policy for details."],
 ];
+
+/** Two-option segmented control with a sliding pill. */
+function Seg<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
+  const idx = options.findIndex(([k]) => k === value);
+  return (
+    <div role="tablist" className="seg rounded-lg border p-1 bg-gray-50" data-active={idx}>
+      <span className="seg-pill" aria-hidden />
+      {options.map(([k, label]) => (
+        <button key={k} role="tab" aria-selected={value === k} onClick={() => onChange(k)}
+          className={`px-5 py-2 rounded-md text-sm font-medium ${value === k ? "text-white" : "text-gray-700 hover:text-[#0e3b2e]"}`}>
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export function Landing() {
   const [vehicles, setVehicles] = useState<Vehicle[] | null>(null);
@@ -66,40 +83,44 @@ export function Landing() {
       <Header />
 
       {/* Hero */}
-      <section className="bg-[#0e3b2e] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center">
+      <section className="hero-ambient bg-[#0e3b2e] text-white">
+        <HeroAmbient />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-24 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center">
           <div className="space-y-6">
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05]">
-              Rent a car this week. Work toward owning one.
+              <SplitWords text="Rent a car this week." delay={80} />{" "}
+              <SplitWords text="Work toward owning one." delay={380} wordClassName="text-shimmer" />
             </h1>
-            <p className="text-lg text-green-50/90 max-w-xl">
+            <p className="enter text-lg text-green-50/90 max-w-xl" style={{ ["--d" as string]: 700 }}>
               Rent a car from a verified owner and start driving on Uber, Bolt or inDrive, with the weekly rate, deposit and terms in writing before you commit. When you're ready, our Drive to Own programme gives you a structured path to a car in your own name.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/vehicles" className="inline-flex items-center justify-center h-12 px-7 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Find a car</Link>
-              <Link to="/drive-to-own" className="inline-flex items-center justify-center h-12 px-7 rounded-lg border border-white/40 font-semibold hover:bg-white/10">Explore Drive to Own</Link>
+            <div className="enter flex flex-col sm:flex-row gap-3" style={{ ["--d" as string]: 850 }}>
+              <Magnetic><Link to="/vehicles" className="btn-premium w-full inline-flex items-center justify-center h-12 px-7 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Find a car</Link></Magnetic>
+              <Magnetic><Link to="/drive-to-own" className="btn-ghost-premium w-full inline-flex items-center justify-center h-12 px-7 rounded-lg border border-white/40 font-semibold hover:bg-white/10">Explore Drive to Own</Link></Magnetic>
             </div>
           </div>
 
-          <div className="bg-white text-[#10201a] rounded-2xl p-6 shadow-xl">
+          <div className="enter-card bg-white text-[#10201a] rounded-2xl p-6 shadow-2xl shadow-black/30" style={{ ["--d" as string]: 550 }}>
             <h2 className="font-display text-xl font-bold">Cars available now</h2>
             <p className="text-sm text-gray-600 mb-4">Pick the platform you drive on.</p>
             <ul className="divide-y">
               {byPlatform.map((p) => (
                 <li key={p.id}>
-                  <Link to={`/vehicles?platform=${p.id}`} className="flex items-center justify-between py-4 group">
+                  <Link to={`/vehicles?platform=${p.id}`} className="flex items-center justify-between py-4 group -mx-2 px-2 rounded-lg transition-colors hover:bg-[#f1f6f3]">
                     <div>
                       <div className="font-semibold">{p.label}</div>
                       <div className="text-sm text-gray-600">
-                        {vehicles === null ? "Loading…" : p.count === 0 ? "No cars listed yet" : `${p.count} ${p.count === 1 ? "car" : "cars"} · from ${money(p.from!)} a week`}
+                        {vehicles === null ? <span className="shimmer inline-block h-3.5 w-36 align-middle" aria-label="Loading" />
+                          : p.count === 0 ? "No cars listed yet"
+                          : <><CountUp value={p.count} /> {p.count === 1 ? "car" : "cars"} · from <CountUp value={p.from!} format={money} /> a week</>}
                       </div>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-[#00873a]" />
+                    <ChevronRight className="w-5 h-5 text-gray-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#00873a]" />
                   </Link>
                 </li>
               ))}
             </ul>
-            <Link to="/join?role=owner" className="block text-center text-sm font-medium text-[#00873a] hover:underline pt-3 border-t">Own a car? List it and earn weekly →</Link>
+            <Link to="/join?role=owner" className="link-arrow block text-center text-sm font-medium text-[#00873a] pt-3 border-t">Own a car? List it and earn weekly <span className="arr">→</span></Link>
           </div>
         </div>
       </section>
@@ -108,11 +129,11 @@ export function Landing() {
       <section className="bg-[#f1f6f3] border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid md:grid-cols-[auto_1fr] gap-4 md:gap-10 items-center">
           <h2 className="font-display text-xl font-bold">What drivers need to apply</h2>
-          <ul className="flex flex-wrap gap-x-8 gap-y-2 text-sm">
+          <Reveal as="ul" stagger className="flex flex-wrap gap-x-8 gap-y-2 text-sm">
             {["SA ID or passport", "Valid driver's licence", "Professional Driving Permit (PrDP)", "An approved Uber, inDrive or Bolt driver account"].map((x) => (
               <li key={x} className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-[#00873a] shrink-0" />{x}</li>
             ))}
-          </ul>
+          </Reveal>
         </div>
       </section>
 
@@ -121,24 +142,17 @@ export function Landing() {
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
             <h2 className="font-display text-3xl md:text-4xl font-bold max-w-xl">From sign-up to the driver's seat in four steps</h2>
-            <div role="tablist" className="inline-flex rounded-lg border p-1 bg-gray-50">
-              {(["drivers", "owners"] as const).map((t) => (
-                <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)}
-                  className={`px-5 py-2 rounded-md text-sm font-medium ${tab === t ? "bg-[#0e3b2e] text-white" : "text-gray-700"}`}>
-                  {t === "drivers" ? "I'm a driver" : "I own a car"}
-                </button>
-              ))}
-            </div>
+            <Seg value={tab} onChange={setTab} options={[["drivers", "I'm a driver"], ["owners", "I own a car"]]} />
           </div>
-          <ol className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <Reveal as="ol" stagger key={tab} className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((s, i) => (
-              <li key={s.title} className="border-t-2 border-[#00873a] pt-4">
+              <li key={s.title} className="step-rule border-t-2 border-[#e3f1e9] pt-4">
                 <div className="font-display text-3xl font-bold text-[#00873a] mb-2">{i + 1}</div>
                 <h3 className="font-semibold text-lg mb-1">{s.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{s.text}</p>
               </li>
             ))}
-          </ol>
+          </Reveal>
         </Reveal>
       </section>
 
@@ -151,16 +165,9 @@ export function Landing() {
                 <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">Run the numbers first</h2>
                 <p className="text-gray-600 max-w-xl">See what a rental could mean for you before you commit. The figures are examples, so change any of them to match your own situation.</p>
               </div>
-              <div role="tablist" className="inline-flex rounded-lg border p-1 bg-gray-50">
-                {(["drivers", "owners"] as const).map((t) => (
-                  <button key={t} role="tab" aria-selected={calc === t} onClick={() => setCalc(t)}
-                    className={`px-5 py-2 rounded-md text-sm font-medium ${calc === t ? "bg-[#0e3b2e] text-white" : "text-gray-700"}`}>
-                    {t === "drivers" ? "Driver earnings" : "Owner income"}
-                  </button>
-                ))}
-              </div>
+              <Seg value={calc} onChange={setCalc} options={[["drivers", "Driver earnings"], ["owners", "Owner income"]]} />
             </div>
-            <div className="rounded-2xl border p-6 md:p-8">{calc === "drivers" ? <DriverCalculator /> : <OwnerCalculator />}</div>
+            <div className="rounded-2xl border p-6 md:p-8 transition-shadow duration-500 hover:shadow-[0_24px_60px_-36px_rgba(14,59,46,0.45)]"><div key={calc} className="swap-in">{calc === "drivers" ? <DriverCalculator /> : <OwnerCalculator />}</div></div>
           </Reveal>
         </div>
       </section>
@@ -171,11 +178,11 @@ export function Landing() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-end mb-8">
               <h2 className="font-display text-3xl font-bold">Available now</h2>
-              <Link to="/vehicles" className="text-[#00873a] font-medium hover:underline">View all cars</Link>
+              <Link to="/vehicles" className="link-arrow text-[#00873a] font-medium">View all cars <span className="arr">→</span></Link>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Reveal stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {vehicles.slice(0, 6).map((v) => <VehicleCard key={v.id} v={v} />)}
-            </div>
+            </Reveal>
           </div>
         </section>
       )}
@@ -183,24 +190,25 @@ export function Landing() {
       {/* Protections */}
       <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-display text-3xl md:text-4xl font-bold max-w-2xl mb-3">Clear terms for owners and drivers</h2>
-          <p className="text-gray-600 max-w-2xl mb-10">Renting a car for e-hailing works best when nobody is guessing. Drive2Own puts who pays for what, and what happens if something goes wrong, in writing before the keys change hands.</p>
-          <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
+          <Reveal><h2 className="font-display text-3xl md:text-4xl font-bold max-w-2xl mb-3">Clear terms for owners and drivers</h2>
+          <p className="text-gray-600 max-w-2xl mb-10">Renting a car for e-hailing works best when nobody is guessing. Drive2Own puts who pays for what, and what happens if something goes wrong, in writing before the keys change hands.</p></Reveal>
+          <Reveal stagger className="grid md:grid-cols-2 gap-x-6 gap-y-4">
             {protections.map((p) => (
-              <div key={p.title} className="flex gap-4">
-                <div className="w-11 h-11 shrink-0 rounded-lg bg-[#e3f1e9] flex items-center justify-center"><p.icon className="w-5 h-5 text-[#00873a]" /></div>
+              <div key={p.title} className="group spotlight flex gap-4 rounded-2xl p-5 -m-1 border border-transparent transition-colors duration-500 hover:border-[#e3f1e9]">
+                <div className="icon-pop w-11 h-11 shrink-0 rounded-lg bg-[#e3f1e9] flex items-center justify-center"><p.icon className="w-5 h-5 text-[#00873a]" /></div>
                 <div>
                   <h3 className="font-semibold mb-1">{p.title}</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">{p.text}</p>
                 </div>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Drive to Own */}
-      <section className="py-16 md:py-20 bg-[#0e3b2e] text-white">
+      <section className="hero-ambient py-16 md:py-24 bg-[#0e3b2e] text-white">
+        <HeroAmbient />
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-center">
           <div className="space-y-5">
             <span className="inline-block rounded-full bg-[#ffc72c] text-[#10201a] text-xs font-semibold px-3 py-1">New · By application</span>
@@ -209,55 +217,55 @@ export function Landing() {
               Join a small group of verified drivers who each pay a fixed monthly contribution. When your turn comes, we buy an inspected, insured and tracked car,
               and every payment you make after that counts toward owning it.
             </p>
-            <Link to="/drive-to-own" className="inline-flex h-12 items-center px-7 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">How Drive to Own works</Link>
+            <Magnetic><Link to="/drive-to-own" className="btn-premium inline-flex h-12 items-center px-7 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">How Drive to Own works</Link></Magnetic>
           </div>
-          <ul className="grid sm:grid-cols-2 gap-4">
+          <Reveal as="ul" stagger className="grid sm:grid-cols-2 gap-4">
             {[
               ["All-in cost up front", "Insurance, tracking and servicing shown before you sign."],
               ["Money kept separate", "Group contributions are never mixed with company funds."],
               ["Written agreement", "A plain-language contract with a one-page summary."],
               ["Ownership in your name", "We handle the paperwork when your last payment clears."],
             ].map(([t, d]) => (
-              <li key={t} className="rounded-xl bg-white/5 border border-white/15 p-5">
+              <li key={t} className="spotlight on-dark lift rounded-xl bg-white/5 border border-white/15 hover:border-white/30 p-5 backdrop-blur-sm">
                 <div className="font-semibold mb-1">{t}</div>
                 <div className="text-sm text-green-50/80">{d}</div>
               </li>
             ))}
-          </ul>
+          </Reveal>
         </Reveal>
       </section>
 
       {/* FAQ */}
       <section id="faq" className="py-16 bg-[#f1f6f3] scroll-mt-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <h2 className="font-display text-3xl font-bold mb-8">Frequently asked questions</h2>
-          <Accordion type="single" collapsible className="bg-white rounded-xl border px-5">
+          <Reveal><h2 className="font-display text-3xl font-bold mb-8">Frequently asked questions</h2></Reveal>
+          <Reveal variant="fade"><Accordion type="single" collapsible className="bg-white rounded-xl border px-5">
             {FAQ.map(([q, a], i) => (
               <AccordionItem key={q} value={`q${i}`}>
                 <AccordionTrigger className="text-left text-base font-semibold">{q}</AccordionTrigger>
                 <AccordionContent className="text-gray-600 leading-relaxed">{a}</AccordionContent>
               </AccordionItem>
             ))}
-          </Accordion>
+          </Accordion></Reveal>
         </div>
       </section>
 
       {/* Closing CTA */}
       <section className="py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-6">
-          <div className="rounded-2xl bg-[#0e3b2e] text-white p-8 md:p-10 space-y-4">
-            <CalendarCheck className="w-8 h-8 text-[#ffc72c]" />
+        <Reveal stagger className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-6">
+          <div className="group spotlight on-dark lift rounded-2xl bg-[#0e3b2e] text-white p-8 md:p-10 space-y-4">
+            <CalendarCheck className="icon-pop w-8 h-8 text-[#ffc72c]" />
             <h2 className="font-display text-2xl md:text-3xl font-bold">Ready to drive?</h2>
             <p className="text-green-50/90">Create an account, upload your documents once, and send a request to any owner.</p>
-            <Link to="/join?role=driver" className="inline-flex h-11 items-center px-6 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Sign up as a driver</Link>
+            <Link to="/join?role=driver" className="btn-premium inline-flex h-11 items-center px-6 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Sign up as a driver</Link>
           </div>
-          <div className="rounded-2xl border-2 border-[#0e3b2e] p-8 md:p-10 space-y-4">
-            <KeyRound className="w-8 h-8 text-[#00873a]" />
+          <div className="group spotlight lift rounded-2xl border-2 border-[#0e3b2e] p-8 md:p-10 space-y-4">
+            <KeyRound className="icon-pop w-8 h-8 text-[#00873a]" />
             <h2 className="font-display text-2xl md:text-3xl font-bold">Put your car to work</h2>
             <p className="text-gray-600">List your car, set your weekly rate, and choose which drivers you hand the keys to.</p>
-            <Link to="/join?role=owner" className="inline-flex h-11 items-center px-6 rounded-lg bg-[#0e3b2e] text-white font-semibold hover:bg-[#0a2c22]">List your car</Link>
+            <Link to="/join?role=owner" className="btn-premium inline-flex h-11 items-center px-6 rounded-lg bg-[#0e3b2e] text-white font-semibold hover:bg-[#0a2c22]">List your car</Link>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <Footer />

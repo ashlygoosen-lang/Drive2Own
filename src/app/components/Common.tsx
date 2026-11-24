@@ -85,12 +85,12 @@ export function SaveButton({ id, className = "" }: { id: number; className?: str
 
 export function VehicleCardSkeleton() {
   return (
-    <Card className="overflow-hidden animate-pulse" aria-hidden>
-      <div className="h-44 bg-gray-200" />
+    <Card className="overflow-hidden" aria-hidden>
+      <div className="h-44 shimmer !rounded-none" />
       <div className="p-4 space-y-3">
-        <div className="h-4 bg-gray-200 rounded w-2/3" />
-        <div className="h-3 bg-gray-200 rounded w-1/3" />
-        <div className="h-3 bg-gray-200 rounded w-1/2" />
+        <div className="h-4 shimmer w-2/3" />
+        <div className="h-3 shimmer w-1/3" />
+        <div className="h-3 shimmer w-1/2" />
       </div>
     </Card>
   );
@@ -98,10 +98,10 @@ export function VehicleCardSkeleton() {
 
 export function VehicleCard({ v, row = false }: { v: Vehicle; row?: boolean }) {
   return (
-    <Link to={`/vehicles/${v.id}`}>
-      <Card className={`overflow-hidden hover:shadow-lg transition-shadow h-full relative ${row ? "sm:flex" : ""}`}>
+    <Link to={`/vehicles/${v.id}`} className="group block h-full rounded-xl">
+      <Card className={`lift overflow-hidden h-full relative ${row ? "sm:flex" : ""}`}>
         <SaveButton id={v.id} className="absolute top-3 right-3 z-10" />
-        <VehicleImage src={v.imageUrl} color={v.color} className={row ? "w-full sm:w-64 h-44 shrink-0" : "w-full h-44"} />
+        <div className={`img-zoom ${row ? "w-full sm:w-64 h-44 shrink-0" : "w-full h-44"}`}><VehicleImage src={v.imageUrl} color={v.color} className="w-full h-full" /></div>
         <div className="p-4 space-y-3 flex-1">
           <div className="flex justify-between items-start gap-2">
             <div>
@@ -109,7 +109,7 @@ export function VehicleCard({ v, row = false }: { v: Vehicle; row?: boolean }) {
               <p className="text-sm text-gray-500">{v.city} · {v.color}</p>
             </div>
             <div className="text-right shrink-0">
-              <div className="font-bold text-[#00873a]">{money(v.weeklyRate)}</div>
+              <div className="font-bold text-[#00873a] transition-transform duration-500 group-hover:scale-105 origin-right">{money(v.weeklyRate)}</div>
               <div className="text-xs text-gray-500">per week</div>
             </div>
           </div>

@@ -110,7 +110,7 @@ export function Vehicles() {
             No cars match these filters. Try removing one, or check back soon as new cars are listed regularly.
           </div>
         )}
-        <div className={view === "list" ? "grid gap-4" : "grid sm:grid-cols-2 lg:grid-cols-3 gap-6"}>
+        <div key={`${view}-${vehicles?.length ?? "l"}`} className={`cascade ${view === "list" ? "grid gap-4" : "grid sm:grid-cols-2 lg:grid-cols-3 gap-6"}`}>
           {vehicles === null && !error && [1, 2, 3, 4, 5, 6].map((i) => <VehicleCardSkeleton key={i} />)}
           {vehicles?.map((v) => <VehicleCard key={v.id} v={v} row={view === "list"} />)}
         </div>

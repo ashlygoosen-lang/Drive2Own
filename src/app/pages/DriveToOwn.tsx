@@ -8,6 +8,7 @@ import {
   ReceiptText, ShieldCheck, Users, Wrench, X,
 } from "lucide-react";
 import { useTitle } from "../../lib/useTitle";
+import { HeroAmbient, Magnetic, SplitWords } from "../components/Motion";
 
 const CONTACT = import.meta.env.VITE_CONTACT_EMAIL as string | undefined;
 const interestHref = CONTACT
@@ -114,21 +115,24 @@ export function DriveToOwn() {
       <Header />
 
       {/* Hero */}
-      <section className="bg-[#0e3b2e] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20 grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
+      <section className="hero-ambient bg-[#0e3b2e] text-white">
+        <HeroAmbient />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-24 grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
           <div className="space-y-6">
-            <span className="inline-block rounded-full bg-[#ffc72c] text-[#10201a] text-xs font-semibold px-3 py-1">By application · Opening in phases</span>
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05]">Drive today. Own tomorrow.</h1>
-            <p className="text-lg text-green-50/90 max-w-xl">
+            <span className="enter inline-block rounded-full bg-[#ffc72c] text-[#10201a] text-xs font-semibold px-3 py-1">By application · Opening in phases</span>
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05]">
+              <SplitWords text="Drive today." delay={150} />{" "}<SplitWords text="Own tomorrow." delay={360} wordClassName="text-shimmer" />
+            </h1>
+            <p className="enter text-lg text-green-50/90 max-w-xl" style={{ ["--d" as string]: 650 }}>
               Drive to Own is our rent-to-own programme for Uber, Bolt and inDrive drivers. You join a small group of verified drivers,
               we buy the car, and every payment you make moves you closer to a vehicle registered in your name.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <a href={interestHref} className="inline-flex items-center justify-center h-12 px-7 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Register your interest</a>
-              <a href="#how" className="inline-flex items-center justify-center h-12 px-7 rounded-lg border border-white/40 font-semibold hover:bg-white/10">See how it works</a>
+            <div className="enter flex flex-col sm:flex-row gap-3" style={{ ["--d" as string]: 800 }}>
+              <Magnetic><a href={interestHref} className="btn-premium w-full inline-flex items-center justify-center h-12 px-7 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Register your interest</a></Magnetic>
+              <Magnetic><a href="#how" className="btn-ghost-premium w-full inline-flex items-center justify-center h-12 px-7 rounded-lg border border-white/40 font-semibold hover:bg-white/10">See how it works</a></Magnetic>
             </div>
           </div>
-          <div className="bg-white/5 border border-white/15 rounded-2xl p-6 space-y-4">
+          <div className="enter-card spotlight on-dark bg-white/5 border border-white/15 rounded-2xl p-6 space-y-4 backdrop-blur-sm" style={{ ["--d" as string]: 500 }}>
             <h2 className="font-display text-lg font-bold">What makes it different</h2>
             {[
               [ReceiptText, "The full monthly cost before you sign, not just a headline instalment"],
@@ -164,15 +168,15 @@ export function DriveToOwn() {
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">How it works</h2>
           <p className="text-gray-600 max-w-2xl mb-10">You'll know your group size, your monthly contribution and your expected turn window before you join. Turns are allocated by a published schedule or a recorded draw that members can witness.</p>
-          <ol className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
+          <Reveal as="ol" stagger className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
             {STEPS.map((s, i) => (
-              <li key={s.title} className="border-t-2 border-[#00873a] pt-4">
+              <li key={s.title} className="step-rule border-t-2 border-[#d5e6dc] pt-4">
                 <div className="font-display text-3xl font-bold text-[#00873a] mb-2">{i + 1}</div>
                 <h3 className="font-semibold text-lg mb-1">{s.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{s.text}</p>
               </li>
             ))}
-          </ol>
+          </Reveal>
         </Reveal>
       </section>
 
@@ -182,7 +186,7 @@ export function DriveToOwn() {
           <div>
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">One all-in monthly figure</h2>
             <p className="text-gray-600 mb-6">Before you sign, you get a Total Monthly Cost Summary that lists every item below, with its amount and whether it's included. Use it to compare us honestly with any other offer.</p>
-            <div className="rounded-2xl bg-[#0e3b2e] text-white p-6 space-y-2">
+            <div className="hero-ambient spotlight on-dark rounded-2xl bg-[#0e3b2e] text-white p-6 space-y-2">
               <div className="text-xs uppercase tracking-wide text-[#ffc72c] font-semibold">Why this matters</div>
               <p className="text-green-50/90 text-sm leading-relaxed">
                 A finance offer advertised at R6,000 a month can come closer to R11,000 once insurance, servicing, tyres and licence costs are added.
@@ -190,9 +194,9 @@ export function DriveToOwn() {
               </p>
             </div>
           </div>
-          <ul className="divide-y border rounded-2xl">
+          <Reveal as="ul" stagger className="divide-y border rounded-2xl bg-white">
             {COSTS.map((c) => (
-              <li key={c.item} className="flex gap-4 p-5">
+              <li key={c.item} className="flex gap-4 p-5 transition-colors duration-300 hover:bg-[#f7fbf9]">
                 <Check className="w-5 h-5 text-[#00873a] shrink-0 mt-0.5" />
                 <div>
                   <div className="font-semibold">{c.item}</div>
@@ -200,7 +204,7 @@ export function DriveToOwn() {
                 </div>
               </li>
             ))}
-          </ul>
+          </Reveal>
         </Reveal>
       </section>
 
@@ -209,11 +213,11 @@ export function DriveToOwn() {
         <Reveal className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 max-w-2xl">How we protect you</h2>
           <p className="text-gray-600 max-w-2xl mb-10">You're trusting us with your money and your income, so we're open about how the programme reduces risk.</p>
-          <div className="grid md:grid-cols-2 gap-6">
+          <Reveal stagger className="grid md:grid-cols-2 gap-6">
             {PROTECTIONS.map((p) => (
-              <div key={p.title} className="bg-white rounded-2xl border p-6">
+              <div key={p.title} className="group spotlight lift bg-white rounded-2xl border p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-[#e3f1e9] flex items-center justify-center"><p.icon className="w-5 h-5 text-[#00873a]" /></div>
+                  <div className="icon-pop w-10 h-10 rounded-lg bg-[#e3f1e9] flex items-center justify-center"><p.icon className="w-5 h-5 text-[#00873a]" /></div>
                   <h3 className="font-semibold text-lg">{p.title}</h3>
                 </div>
                 <ul className="space-y-2">
@@ -223,7 +227,7 @@ export function DriveToOwn() {
                 </ul>
               </div>
             ))}
-          </div>
+          </Reveal>
         </Reveal>
       </section>
 
@@ -231,14 +235,14 @@ export function DriveToOwn() {
       <section className="py-16 md:py-20">
         <Reveal className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-8">If something goes wrong</h2>
-          <dl className="divide-y border rounded-2xl">
+          <Reveal as="dl" stagger className="divide-y border rounded-2xl">
             {IF_WRONG.map(([s, w]) => (
-              <div key={s} className="grid sm:grid-cols-[14rem_1fr] gap-1 sm:gap-6 p-5">
+              <div key={s} className="grid sm:grid-cols-[14rem_1fr] gap-1 sm:gap-6 p-5 transition-colors duration-300 hover:bg-[#f7fbf9]">
                 <dt className="font-semibold">{s}</dt>
                 <dd className="text-gray-700 text-sm leading-relaxed">{w}</dd>
               </div>
             ))}
-          </dl>
+          </Reveal>
           <div className="mt-8 flex gap-4 rounded-2xl bg-amber-50 border border-amber-200 p-6">
             <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0" />
             <div>
@@ -267,7 +271,7 @@ export function DriveToOwn() {
               </thead>
               <tbody className="divide-y">
                 {COMPARE.map((r) => (
-                  <tr key={r.label}>
+                  <tr key={r.label} className="transition-colors duration-300 hover:bg-[#fafcfb]">
                     <th scope="row" className="text-left p-4 text-sm font-medium">{r.label}</th>
                     {r.cells.map((c, i) => <td key={i} className={`p-4 ${i === 0 ? "bg-[#f4faf6]" : ""}`}><CellView v={c} /></td>)}
                   </tr>
@@ -282,8 +286,8 @@ export function DriveToOwn() {
       <section className="py-16 md:py-20">
         <Reveal className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-8">Is it right for you?</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="rounded-2xl border-2 border-[#00873a] p-6">
+          <Reveal stagger className="grid md:grid-cols-2 gap-6">
+            <div className="spotlight lift rounded-2xl border-2 border-[#00873a] p-6">
               <h3 className="font-semibold text-lg mb-4">A good fit if you</h3>
               <ul className="space-y-2">
                 {["Drive full-time or regularly on Uber, Bolt, inDrive or similar", "Want to own a car, not rent one forever", "Can commit to the same amount every month", "Are comfortable in a group where everyone relies on on-time payments"].map((x) => (
@@ -291,44 +295,44 @@ export function DriveToOwn() {
                 ))}
               </ul>
             </div>
-            <div className="rounded-2xl border p-6">
+            <div className="spotlight lift rounded-2xl border p-6">
               <h3 className="font-semibold text-lg mb-4">Probably not right if you</h3>
               <ul className="space-y-2">
                 {["Need a car immediately. Our marketplace may suit you better", "Have income too low or irregular to cover the monthly commitment", "Plan to stop driving or leave the country soon"].map((x) => (
                   <li key={x} className="flex gap-2 text-sm text-gray-700"><X className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />{x}</li>
                 ))}
               </ul>
-              <Link to="/vehicles" className="inline-block mt-4 text-sm font-medium text-[#00873a] hover:underline">Rent a car now instead →</Link>
+              <Link to="/vehicles" className="link-arrow inline-block mt-4 text-sm font-medium text-[#00873a]">Rent a car now instead <span className="arr">→</span></Link>
             </div>
-          </div>
+          </Reveal>
         </Reveal>
       </section>
 
       {/* FAQ */}
       <section className="py-16 bg-[#f1f6f3]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <h2 className="font-display text-3xl font-bold mb-8">Drive to Own questions</h2>
-          <Accordion type="single" collapsible className="bg-white rounded-xl border px-5">
+          <Reveal><h2 className="font-display text-3xl font-bold mb-8">Drive to Own questions</h2></Reveal>
+          <Reveal variant="fade"><Accordion type="single" collapsible className="bg-white rounded-xl border px-5">
             {FAQ.map(([q, a], i) => (
               <AccordionItem key={q} value={`q${i}`}>
                 <AccordionTrigger className="text-left text-base font-semibold">{q}</AccordionTrigger>
                 <AccordionContent className="text-gray-600 leading-relaxed">{a}</AccordionContent>
               </AccordionItem>
             ))}
-          </Accordion>
+          </Accordion></Reveal>
         </div>
       </section>
 
       {/* Apply */}
       <section className="py-16 md:py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl bg-[#0e3b2e] text-white p-8 md:p-12 grid md:grid-cols-[1.2fr_0.8fr] gap-8 items-center">
+          <Reveal variant="scale" className="hero-ambient spotlight on-dark rounded-2xl bg-[#0e3b2e] text-white p-8 md:p-12 grid md:grid-cols-[1.2fr_0.8fr] gap-8 items-center">
             <div className="space-y-4">
               <h2 className="font-display text-3xl font-bold">Ready to start?</h2>
               <p className="text-green-50/90">Register your interest and we'll contact you when a group opens in your area. Creating a driver account now and uploading your documents gets you verified sooner.</p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <a href={interestHref} className="inline-flex items-center justify-center h-11 px-6 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Register your interest</a>
-                <Link to="/join?role=driver" className="inline-flex items-center justify-center h-11 px-6 rounded-lg border border-white/40 font-semibold hover:bg-white/10">Create a driver account</Link>
+                <a href={interestHref} className="btn-premium inline-flex items-center justify-center h-11 px-6 rounded-lg bg-[#ffc72c] text-[#10201a] font-semibold hover:bg-[#ffd25a]">Register your interest</a>
+                <Link to="/join?role=driver" className="btn-ghost-premium inline-flex items-center justify-center h-11 px-6 rounded-lg border border-white/40 font-semibold hover:bg-white/10">Create a driver account</Link>
               </div>
             </div>
             <div className="bg-white/5 border border-white/15 rounded-xl p-5">
@@ -337,7 +341,7 @@ export function DriveToOwn() {
                 {["SA ID or valid work permit", "Driver's licence and PrDP", "Proof of address", "3 to 6 months of e-hailing earnings or bank statements"].map((x) => <li key={x}>• {x}</li>)}
               </ul>
             </div>
-          </div>
+          </Reveal>
           <p className="text-xs text-gray-500 mt-6 leading-relaxed">
             Drive to Own is subject to verification, an affordability assessment and acceptance. Figures on this page are illustrative; your amounts and terms are those in your signed agreement.
             This page is general information, not financial advice. Read your agreement carefully and get independent advice if you're unsure.

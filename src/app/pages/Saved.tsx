@@ -33,7 +33,7 @@ export function Saved() {
             <Link to="/vehicles" className="inline-flex h-10 items-center px-5 rounded-lg bg-[#0e3b2e] text-white font-semibold">Browse cars</Link>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="cascade grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {vehicles === null ? [1, 2, 3].map((i) => <VehicleCardSkeleton key={i} />) : vehicles.map((v) => <VehicleCard key={v.id} v={v} />)}
           </div>
         )}
