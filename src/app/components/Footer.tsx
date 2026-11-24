@@ -1,10 +1,9 @@
 import { Link } from "react-router";
-import { ArrowRight, ArrowUpRight, BadgeCheck, FileSignature, Lock, Mail, MapPin, ReceiptText } from "lucide-react";
+import { ArrowRight, BadgeCheck, FileSignature, Lock, Mail, MapPin, ReceiptText } from "lucide-react";
 import { Logo } from "./Brand";
 import { Magnetic } from "./Motion";
 
 const CONTACT = import.meta.env.VITE_CONTACT_EMAIL as string | undefined;
-const VINK_GROUP_URL = "https://vinklife-production.up.railway.app";
 
 const COLUMNS: { title: string; links: [string, string][] }[] = [
   { title: "For drivers", links: [["Find a car to rent", "/vehicles"], ["Uber cars", "/vehicles?platform=uber"], ["Bolt cars", "/vehicles?platform=bolt"], ["inDrive cars", "/vehicles?platform=indrive"], ["Sign up as a driver", "/join?role=driver"]] },
@@ -77,19 +76,8 @@ export function Footer({ cta = true }: { cta?: boolean }) {
           </div>
         </div>
 
-        {/* Group strip */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <a href={VINK_GROUP_URL} target="_blank" rel="noopener" className="group flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-5 transition-colors hover:border-[#ffc72c]/40 hover:bg-white/[0.05]">
-            <span className="flex items-center gap-4">
-              <span className="font-display text-lg font-extrabold tracking-wide text-[#ffc72c]">VINK</span>
-              <span className="text-sm text-green-50/75">Drive2Own is part of <span className="text-white font-semibold">VINK Group</span>, a South African group of businesses spanning mobility, property, insurance, telecoms and technology.</span>
-            </span>
-            <span className="flex items-center gap-1.5 text-sm font-semibold text-white">Visit VINK Group <ArrowUpRight className="w-4 h-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></span>
-          </a>
-        </div>
-
         {/* Bottom bar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-8 border-t border-white/10 space-y-5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-white/10 space-y-5">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 text-sm text-green-50/70">
             <div className="space-y-1">
               <p>© {new Date().getFullYear()} Drive2Own. All rights reserved.</p>
@@ -101,10 +89,6 @@ export function Footer({ cta = true }: { cta?: boolean }) {
               <Link to="/#faq" className="hover:text-white transition-colors">FAQ</Link>
             </nav>
           </div>
-          <p className="text-xs leading-relaxed text-green-50/50 max-w-4xl">
-            Drive2Own is independent and is not affiliated with, endorsed by or sponsored by Uber, Bolt or inDrive. On the rental marketplace, the agreement is between the vehicle owner and the driver.
-            Drive to Own is subject to verification, an affordability assessment and acceptance. Figures on this website are illustrative and do not constitute financial advice.
-          </p>
         </div>
       </div>
     </footer>
